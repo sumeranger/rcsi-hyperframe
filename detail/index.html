@@ -487,9 +487,9 @@
         position: absolute; left: 360px; top: 690px; width: 1200px; text-align: center;
         font-size: 26px; color: #E8ECF4; text-shadow: 0 4px 18px rgba(7,9,14,0.9);
       }
-      .n3-caption { position: absolute; top: 836px; left: 140px; font-size: 30px; font-weight: 350; line-height: 1.5; }
+      .n3-caption { position: absolute; top: 816px; left: 140px; font-size: 27px; font-weight: 350; line-height: 1.5; max-width: 1640px; }
       .n3-caption b { color: #F0B429; font-weight: 700; }
-      .n3-nuance { position: absolute; top: 896px; left: 140px; width: 1640px; font-size: 24px; font-weight: 350; color: #8B94A7; line-height: 1.6; }
+      .n3-nuance { position: absolute; top: 912px; left: 140px; width: 1640px; font-size: 21px; font-weight: 350; color: #8B94A7; line-height: 1.6; }
       .n3-bottom { position: absolute; bottom: 56px; left: 140px; font-size: 21px; color: #8B94A7; letter-spacing: 0.04em; }
 
       /* ── S6 效益與證據 ─────────────────────── */
@@ -588,7 +588,7 @@
           </svg>
           <div class="toprule"></div>
           <div class="corner-tl mono">RCSI DEEP-DIVE · 01 / 事故</div>
-          <div class="corner-br mono">DB PLATFORM · PROD</div>
+
           <div class="s1-host"><span class="chip mono">PROD-SQL01 · 生產資料庫</span></div>
           <div class="s1-ts mono">03:17:42</div>
           <div class="s1-term">
@@ -622,7 +622,7 @@
           <div class="s2-ghost serif" data-layout-allow-overflow>S·X</div>
           <div class="toprule"></div>
           <div class="corner-tl mono">RCSI DEEP-DIVE · 02 / 機制</div>
-          <div class="corner-br mono">DB PLATFORM · PROD</div>
+
           <div class="s2-kicker mono kicker">ISOLATION LEVEL: READ COMMITTED(SQL SERVER 預設)</div>
           <div class="s2-title serif">預設世界:讀和寫,搶同一把鎖</div>
           <div class="s2-diagram">
@@ -656,7 +656,7 @@
           <div class="glow s3-glow" data-layout-ignore></div>
           <div class="toprule"></div>
           <div class="corner-tl mono">RCSI DEEP-DIVE · 03 / 死結重演</div>
-          <div class="corner-br mono">DB PLATFORM · PROD</div>
+
           <div class="s3-kicker mono kicker">DEADLOCK GRAPH — 還原那天凌晨發生的事</div>
           <div class="s3-title serif">死結,是怎麼長出來的</div>
 
@@ -699,7 +699,7 @@
         <div class="inner">
           <div class="glow s4-glow" data-layout-ignore></div>
           <div class="corner-tl mono">RCSI DEEP-DIVE · 04 / 解方</div>
-          <div class="corner-br mono">DB PLATFORM · PROD</div>
+
           <div class="s4-term">
             <div class="s4-termbar">
               <div class="s1-dot" style="background:#3DD68C"></div><div class="s1-dot"></div><div class="s1-dot"></div>
@@ -733,7 +733,7 @@
           </div>
           <div class="toprule"></div>
           <div class="corner-tl mono">RCSI DEEP-DIVE · 05 / 原理</div>
-          <div class="corner-br mono">DB PLATFORM · PROD</div>
+
           <div class="s5-kicker mono kicker">READ_COMMITTED_SNAPSHOT = ON</div>
           <div class="s5-title serif">寫的人改實體,讀的人看快照</div>
 
@@ -769,7 +769,7 @@
           <div class="grid-bg"></div>
           <div class="glow dv-glow" data-layout-ignore></div>
           <div class="corner-tl mono">RCSI DEEP-DIVE · PART 2</div>
-          <div class="corner-br mono">DB PLATFORM · PROD</div>
+
           <div class="dv-wrap">
             <div class="dv-part mono">PART 2</div>
             <div class="dv-title serif">拆開引擎蓋</div>
@@ -787,7 +787,7 @@
           <div class="lk-ghost serif" data-layout-allow-overflow>🔒</div>
           <div class="toprule"></div>
           <div class="corner-tl mono">RCSI DEEP-DIVE · 06 / 鎖的種類</div>
-          <div class="corner-br mono">DB PLATFORM · PROD</div>
+
           <div class="lk-kicker mono kicker">LOCK MODES — 那 RCSI 到底動了哪一種鎖?</div>
           <div class="lk-title serif">SQL Server 的鎖,有哪幾種</div>
 
@@ -846,7 +846,7 @@
           <div class="xn-ghost mono" data-layout-allow-overflow>#</div>
           <div class="toprule"></div>
           <div class="corner-tl mono">RCSI DEEP-DIVE · 07 / XSN</div>
-          <div class="corner-br mono">DB PLATFORM · PROD</div>
+
           <div class="xn-kicker mono kicker">TRANSACTION SEQUENCE NUMBER — 先認得這把尺</div>
           <div class="xn-title serif">XSN:一支只增不減的計數器</div>
 
@@ -890,7 +890,7 @@
           <div class="n1-ghost mono" data-layout-allow-overflow>XSN</div>
           <div class="toprule"></div>
           <div class="corner-tl mono">RCSI DEEP-DIVE · 08 / 版本鏈</div>
-          <div class="corner-br mono">DB PLATFORM · PROD</div>
+
           <div class="n1-kicker mono kicker">VERSION CHAIN · XSN 交易序號</div>
           <div class="n1-title serif">RCSI 怎麼挑出「該讀哪一版」</div>
 
@@ -934,7 +934,7 @@
           <div class="vz-ghost mono" data-layout-allow-overflow>?</div>
           <div class="toprule"></div>
           <div class="corner-tl mono">RCSI DEEP-DIVE · 09 / 可見性</div>
-          <div class="corner-br mono">DB PLATFORM · PROD</div>
+
           <div class="vz-kicker mono kicker">VISIBILITY CHECK — 「自己」和「別人」怎麼分?</div>
           <div class="vz-title serif">引擎怎麼決定「我讀哪一版」</div>
           <div class="vz-lead">讀一列時,沿版本鏈<b>由新到舊</b>,對每個版本問三題 —— 第一個答「✓」的,就是我讀到的:</div>
@@ -980,7 +980,7 @@
           <div class="glow n2-glow" data-layout-ignore></div>
           <div class="toprule"></div>
           <div class="corner-tl mono">RCSI DEEP-DIVE · 10 / 快照粒度</div>
-          <div class="corner-br mono">DB PLATFORM · PROD</div>
+
           <div class="n2-kicker mono kicker">READ-YOUR-OWN-WRITES + 語句級快照</div>
           <div class="n2-title serif">同一個交易裡,讀得到什麼?</div>
 
@@ -1018,7 +1018,7 @@
           <div class="glow n3-glow" data-layout-ignore></div>
           <div class="toprule"></div>
           <div class="corner-tl mono">RCSI DEEP-DIVE · 11 / 長交易</div>
-          <div class="corner-br mono">DB PLATFORM · PROD</div>
+
           <div class="n3-kicker mono kicker">VERSION STORE 會自動回收 —— 唯一天敵:長交易</div>
           <div class="n3-title serif">一筆長交易,全庫陪葬</div>
 
@@ -1061,7 +1061,7 @@
           <div class="glow map-glow" data-layout-ignore></div>
           <div class="toprule"></div>
           <div class="corner-tl mono">RCSI DEEP-DIVE · 總覽</div>
-          <div class="corner-br mono">DB PLATFORM · PROD</div>
+
           <div class="map-kicker mono kicker">RECAP — RCSI 不是一個開關,是換一套讀取引擎</div>
           <div class="map-title serif">兩個世界:鎖 vs 版本</div>
 
@@ -1109,7 +1109,7 @@
           <div class="s6-ghost serif" data-layout-allow-overflow>✓</div>
           <div class="toprule"></div>
           <div class="corner-tl mono">RCSI DEEP-DIVE · 12 / 效益</div>
-          <div class="corner-br mono">DB PLATFORM · PROD</div>
+
           <div class="s6-kicker mono kicker">"READERS DON'T BLOCK WRITERS. WRITERS DON'T BLOCK READERS."</div>
           <div class="s6-title serif">開啟之後,我們得到什麼</div>
 
@@ -1145,7 +1145,7 @@
           <div class="s7-ghost serif" data-layout-allow-overflow>!</div>
           <div class="toprule"></div>
           <div class="corner-tl mono">RCSI DEEP-DIVE · 13 / 代價</div>
-          <div class="corner-br mono">DB PLATFORM · PROD</div>
+
           <div class="s7-kicker mono kicker">TRADE-OFFS — 天下沒有免費的午餐</div>
           <div class="s7-title serif">代價,說清楚</div>
 
@@ -1193,7 +1193,7 @@
           <div class="glow s8-glow" data-layout-ignore></div>
           <div class="toprule"></div>
           <div class="corner-tl mono">RCSI DEEP-DIVE · 14 / 行動</div>
-          <div class="corner-br mono">DB PLATFORM · PROD</div>
+
           <div class="s8-planewrap">
             <div class="s8-kicker mono kicker">ROLLOUT PLAN — 不是賭,是工程</div>
             <div class="s8-title serif">上線三步,風險可控</div>

@@ -4,9 +4,13 @@
   "type": "module",
   "scripts": {
     "dev": "npx --yes hyperframes@0.6.93 preview",
+    "dev:detail": "npx --yes hyperframes@0.6.93 preview ./detail",
     "check": "npx --yes hyperframes@0.6.93 lint && npx --yes hyperframes@0.6.93 validate && npx --yes hyperframes@0.6.93 inspect",
+    "check:detail": "npx --yes hyperframes@0.6.93 lint ./detail && npx --yes hyperframes@0.6.93 validate ./detail && npx --yes hyperframes@0.6.93 inspect ./detail",
     "render": "npx --yes hyperframes@0.6.93 render",
-    "publish": "npx --yes hyperframes@0.6.93 publish"
+    "render:detail": "npx --yes hyperframes@0.6.93 render ./detail",
+    "publish": "npx --yes hyperframes@0.6.93 publish",
+    "publish:detail": "npx --yes hyperframes@0.6.93 publish ./detail"
   },
   "devDependencies": {
     "@ffprobe-installer/ffprobe": "^2.1.2",
