@@ -1,0 +1,19 @@
+# 依賴與工具二進位(可重裝)
+node_modules/
+chrome-headless-shell/
+.bin/
+
+# 渲染輸出(可從原始碼重新產生;體積大不入庫)
+*.mp4
+renders/
+
+# 驗證用截圖(可重生)
+snapshots/
+detail/snapshots/
+
+# HyperFrames / 渲染 worktree 暫存
+work-*/
+
+# .hyperframes 暫存截圖 — 但保留 expanded-prompt.md 規格
+.hyperframes/*
+!.hyperframes/expanded-prompt.md

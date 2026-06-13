@@ -1,0 +1,1595 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@700;900&family=JetBrains+Mono:wght@400;700&display=block"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0; width: 1920px; height: 1080px; overflow: hidden;
+        background: #0B0E14;
+      }
+      body {
+        font-family: "Noto Sans TC", "Noto Sans CJK TC", sans-serif;
+        color: #E8ECF4;
+      }
+      .serif { font-family: "Noto Serif TC", "Noto Serif CJK TC", serif; font-weight: 900; }
+      .mono { font-family: "JetBrains Mono", "Noto Sans Mono CJK TC", monospace; }
+
+      .scene {
+        position: absolute; top: 0; left: 0; width: 1920px; height: 1080px;
+        overflow: hidden; background: #0B0E14;
+      }
+      #s1 { z-index: 1; }
+      #s2 { z-index: 2; opacity: 0; }
+      #s3 { z-index: 3; opacity: 0; }
+      #s4 { z-index: 4; opacity: 0; background: #07090E; }
+      #s5 { z-index: 5; opacity: 0; }
+      #dv { z-index: 5; opacity: 0; }
+      #lk { z-index: 6; opacity: 0; }
+      #xn { z-index: 7; opacity: 0; }
+      #n1 { z-index: 8; opacity: 0; }
+      #vz { z-index: 8; opacity: 0; }
+      #n2 { z-index: 9; opacity: 0; }
+      #n3 { z-index: 10; opacity: 0; }
+      #map { z-index: 10; opacity: 0; }
+      #s6 { z-index: 11; opacity: 0; }
+      #s7 { z-index: 12; opacity: 0; }
+      #s8 { z-index: 13; opacity: 0; }
+      .inner { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; }
+
+      /* ── 共用裝飾 ───────────────────────────── */
+      .grid-bg {
+        position: absolute; top: 0; left: 0; width: 1920px; height: 1080px;
+        background-image:
+          linear-gradient(rgba(74, 88, 120, 0.14) 1px, rgba(74, 88, 120, 0) 1px),
+          linear-gradient(90deg, rgba(74, 88, 120, 0.14) 1px, rgba(74, 88, 120, 0) 1px);
+        background-size: 96px 96px;
+      }
+      .glow {
+        position: absolute; width: 1700px; height: 1700px; border-radius: 50%;
+        pointer-events: none;
+      }
+      .corner-tl {
+        position: absolute; top: 44px; left: 60px;
+        font-size: 20px; letter-spacing: 0.12em; color: #9CA6BA;
+      }
+      .corner-br {
+        position: absolute; bottom: 44px; right: 60px;
+        font-size: 20px; letter-spacing: 0.12em; color: #9CA6BA;
+      }
+      .toprule {
+        position: absolute; top: 92px; left: 60px; width: 1800px; height: 2px;
+        background: rgba(74, 88, 120, 0.45);
+      }
+      .kicker {
+        font-size: 22px; letter-spacing: 0.18em; color: #8B94A7;
+        text-transform: uppercase;
+      }
+      .chip {
+        display: inline-block; border: 2px solid #4A5878; border-radius: 4px;
+        padding: 8px 18px; font-size: 20px; color: #8B94A7; letter-spacing: 0.06em;
+      }
+      .card {
+        background: #121826; border: 2px solid #2A3447; border-radius: 10px;
+      }
+
+      /* ── S1 深夜告警 ───────────────────────── */
+      .s1-glow { top: -500px; left: 700px; background: radial-gradient(circle, rgba(229,72,77,0.26) 0%, rgba(229,72,77,0) 62%); }
+      .s1-ghostlock { position: absolute; right: -60px; top: 240px; opacity: 0.13; }
+      .s1-ts { position: absolute; top: 120px; right: 140px; font-size: 34px; color: #E5484D; letter-spacing: 0.1em; }
+      .s1-host { position: absolute; top: 124px; left: 140px; }
+      .s1-term { position: absolute; top: 200px; left: 140px; width: 1240px; }
+      .s1-termbar {
+        height: 56px; background: #1A2233; border-radius: 10px 10px 0 0;
+        display: flex; align-items: center; padding: 0 24px; gap: 10px;
+        border: 2px solid #2A3447; border-bottom: none;
+      }
+      .s1-dot { width: 16px; height: 16px; border-radius: 50%; background: #4A5878; }
+      .s1-dot.red { background: #E5484D; }
+      .s1-termtitle { margin-left: 14px; font-size: 20px; color: #8B94A7; }
+      .s1-termbody {
+        background: #0E1420; border: 2px solid #2A3447; border-radius: 0 0 10px 10px;
+        padding: 36px 44px; font-size: 26px; line-height: 1.75; color: #C8D0DE;
+      }
+      .s1-line { white-space: nowrap; }
+      .s1-msg1 { color: #F2555A; }
+      .s1-victim { color: #F2555A; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+      .s1-rule { position: absolute; top: 700px; left: 140px; width: 220px; height: 5px; background: #E5484D; transform-origin: left center; }
+      .s1-head { position: absolute; top: 736px; left: 140px; font-size: 76px; line-height: 1.3; letter-spacing: 0.02em; }
+      .s1-sub { position: absolute; top: 868px; left: 140px; font-size: 32px; font-weight: 350; color: #8B94A7; }
+      .s1-chips { position: absolute; top: 952px; left: 140px; display: flex; gap: 18px; }
+      .s1-chips .alarm { border-color: #7F1D24; color: #F2555A; }
+
+      /* ── S2 預設世界的鎖 ───────────────────── */
+      .s2-glow { top: -700px; left: -500px; background: radial-gradient(circle, rgba(74,88,120,0.30) 0%, rgba(74,88,120,0) 62%); }
+      .s2-ghost { position: absolute; right: 40px; bottom: -70px; font-size: 420px; font-weight: 900; color: rgba(74,88,120,0.07); letter-spacing: -0.04em; }
+      .s2-kicker { position: absolute; top: 120px; left: 140px; }
+      .s2-title { position: absolute; top: 158px; left: 140px; font-size: 60px; }
+      .s2-diagram { position: absolute; top: 270px; left: 0; width: 1180px; height: 620px; }
+      .s2-table {
+        position: absolute; left: 200px; top: 330px; width: 760px; height: 120px;
+        display: flex; align-items: center; justify-content: center; gap: 24px;
+      }
+      .s2-tablename { font-size: 34px; font-weight: 700; }
+      .s2-tablerows { font-size: 20px; color: #8B94A7; }
+      .s2-cap {
+        position: absolute; top: 60px; width: 380px; height: 88px; border-radius: 44px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 26px; background: #121826;
+      }
+      .s2-capsel { left: 110px; border: 2px solid #6B7894; color: #E8ECF4; }
+      .s2-capdel { left: 620px; border: 2px solid #E5484D; color: #F2555A; }
+      .s2-lock {
+        position: absolute; width: 84px; height: 84px; border-radius: 50%;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        font-size: 30px; font-weight: 700; background: #0E1420;
+      }
+      .s2-locks { left: 350px; top: 226px; border: 3px solid #C8D0DE; color: #E8ECF4; }
+      .s2-lockx { left: 760px; top: 226px; border: 3px solid #E5484D; color: #F2555A; }
+      .s2-locklabel { position: absolute; font-size: 20px; color: #8B94A7; width: 200px; text-align: center; }
+      .s2-locklabel.ls { left: 292px; top: 174px; }
+      .s2-locklabel.lx { left: 702px; top: 174px; }
+      .s2-matrix { position: absolute; right: 140px; top: 330px; width: 460px; padding: 30px 36px; }
+      .s2-mtitle { font-size: 26px; color: #8B94A7; margin-bottom: 18px; letter-spacing: 0.1em; }
+      .s2-mrow { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-top: 2px solid #2A3447; font-size: 26px; }
+      .s2-mok { color: #C8D0DE; font-weight: 700; }
+      .s2-mno { color: #F2555A; font-weight: 700; }
+      .s2-mdesc { font-size: 22px; color: #8B94A7; }
+      .s2-caption { position: absolute; top: 920px; left: 140px; font-size: 34px; font-weight: 350; line-height: 1.55; }
+      .s2-caption2 { position: absolute; top: 980px; left: 140px; font-size: 27px; font-weight: 350; color: #8B94A7; }
+      .s2-wait { position: absolute; left: 638px; top: 162px; font-size: 20px; color: #F2555A; letter-spacing: 0.15em; }
+
+      /* ── S3 死結成環 ───────────────────────── */
+      .s3-glow { top: -350px; left: 200px; background: radial-gradient(circle, rgba(229,72,77,0.30) 0%, rgba(229,72,77,0) 60%); }
+      .s3-kicker { position: absolute; top: 116px; left: 140px; }
+      .s3-title { position: absolute; top: 154px; left: 140px; font-size: 60px; }
+      .s3-node {
+        position: absolute; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 4px;
+      }
+      .s3-proc { width: 340px; height: 96px; border-radius: 48px; background: #121826; font-size: 26px; }
+      .s3-res { width: 420px; height: 88px; border-radius: 10px; background: #121826; border: 2px solid #6B7894; font-size: 25px; }
+      .s3-psel { left: 120px; top: 470px; border: 2px solid #C8D0DE; }
+      .s3-pdel { left: 1000px; top: 470px; border: 2px solid #E5484D; color: #F2555A; }
+      .s3-rnc { left: 520px; top: 250px; }
+      .s3-rcl { left: 520px; top: 690px; }
+      .s3-nodesub { font-size: 19px; color: #8B94A7; }
+      .s3-svg { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; pointer-events: none; }
+      .s3-edge { fill: none; stroke-width: 5; stroke-dasharray: 1; stroke-dashoffset: 1; }
+      .s3-hold { stroke: #9AA6BD; }
+      .s3-wait { stroke: #E5484D; }
+      .s3-edgelabel { position: absolute; font-size: 20px; padding: 4px 12px; border-radius: 4px; background: #0E1420; }
+      .s3-edgelabel.hold { color: #C8D0DE; border: 2px solid #4A5878; }
+      .s3-edgelabel.wait { color: #F2555A; border: 2px solid #7F1D24; }
+      .s3-steps { position: absolute; left: 1420px; top: 280px; width: 400px; display: flex; flex-direction: column; gap: 22px; }
+      .s3-step { border: 2px solid #2A3447; border-radius: 8px; background: #121826; padding: 16px 20px; font-size: 23px; line-height: 1.5; }
+      .s3-step b { color: #F2555A; font-weight: 700; }
+      .s3-cycle { position: absolute; left: 560px; top: 505px; width: 340px; text-align: center; font-size: 26px; color: #F2555A; font-weight: 700; letter-spacing: 0.1em; }
+      .s3-scan { position: absolute; top: 220px; left: -8px; width: 6px; height: 620px; background: rgba(232,236,244,0.55); box-shadow: 0 0 28px rgba(232,236,244,0.5); }
+      .s3-flash { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; background: rgba(229,72,77,0.32); opacity: 0; }
+      .s3-x { position: absolute; left: 196px; top: 432px; font-size: 150px; font-weight: 900; color: #E5484D; line-height: 1; text-shadow: 0 0 40px rgba(229,72,77,0.6); }
+      .s3-victim {
+        position: absolute; top: 420px; left: 0; width: 1380px; text-align: center;
+        font-size: 150px; color: #F2555A; letter-spacing: 0.08em;
+        text-shadow: 0 14px 60px rgba(7,9,14,0.95), 0 0 90px rgba(229,72,77,0.45);
+      }
+      .s3-victimsub { position: absolute; top: 625px; left: 0; width: 1380px; text-align: center; font-size: 27px; color: #C8D0DE; text-shadow: 0 6px 24px rgba(7,9,14,0.95); }
+      .s3-bottom { position: absolute; bottom: 56px; left: 140px; font-size: 22px; color: #8B94A7; letter-spacing: 0.06em; }
+      .s3-closing { position: absolute; bottom: 104px; left: 140px; font-size: 32px; font-weight: 350; color: #E8ECF4; }
+
+      /* ── S4 一行指令 ───────────────────────── */
+      .s4-glow { top: -310px; left: 110px; background: radial-gradient(circle, rgba(61,214,140,0.22) 0%, rgba(61,214,140,0) 60%); opacity: 0; }
+      .s4-term { position: absolute; top: 250px; left: 440px; width: 1040px; }
+      .s4-termbar {
+        height: 52px; background: #101826; border-radius: 10px 10px 0 0;
+        display: flex; align-items: center; padding: 0 24px; gap: 10px;
+        border: 2px solid #1E2A3C; border-bottom: none;
+      }
+      .s4-termtitle { margin-left: 8px; font-size: 19px; color: #8B94A7; }
+      .s4-termbody {
+        background: #0A1018; border: 2px solid #1E2A3C; border-radius: 0 0 10px 10px;
+        padding: 40px 52px; font-size: 31px; line-height: 1.8; color: #3DD68C;
+      }
+      .s4-line { white-space: nowrap; }
+      .s4-cursor { display: inline-block; width: 18px; height: 36px; background: #3DD68C; vertical-align: middle; margin-left: 6px; }
+      .s4-done { margin-top: 14px; font-size: 22px; color: #8B94A7; }
+      .s4-head { position: absolute; top: 640px; left: 0; width: 1920px; text-align: center; font-size: 84px; letter-spacing: 0.04em; }
+      .s4-notes { position: absolute; top: 800px; left: 0; width: 1920px; display: flex; justify-content: center; gap: 22px; }
+      .s4-notes .chip { border-color: #14532D; color: #3DD68C; }
+      .s4-tail { position: absolute; top: 896px; left: 0; width: 1920px; text-align: center; font-size: 29px; font-weight: 350; color: #8B94A7; }
+
+      /* ── S5 版本快照(雙軌) ─────────────────── */
+      .s5-glow { top: -560px; left: 900px; background: radial-gradient(circle, rgba(61,214,140,0.20) 0%, rgba(61,214,140,0) 62%); }
+      .s5-rails { position: absolute; left: 0; bottom: 150px; width: 1920px; height: 64px; opacity: 0.2; }
+      .s5-rail { position: absolute; left: 0; width: 1920px; height: 3px; background: #4A5878; }
+      .s5-kicker { position: absolute; top: 116px; left: 140px; color: #3DD68C; }
+      .s5-title { position: absolute; top: 154px; left: 140px; font-size: 60px; }
+      .s5-delcap {
+        position: absolute; left: 200px; top: 280px; width: 430px; height: 80px; border-radius: 40px;
+        border: 2px solid #E5484D; background: #121826; color: #F2555A;
+        display: flex; align-items: center; justify-content: center; font-size: 25px;
+      }
+      .s5-table { position: absolute; left: 140px; top: 430px; width: 560px; padding: 26px 32px; }
+      .s5-tabletitle { font-size: 26px; font-weight: 700; margin-bottom: 16px; }
+      .s5-row {
+        background: #0E1420; border: 2px solid #3A4659; border-radius: 8px;
+        padding: 18px 22px; font-size: 24px; color: #C8D0DE;
+        display: flex; justify-content: space-between; align-items: center;
+      }
+      .s5-xbadge { font-size: 20px; color: #F2555A; border: 2px solid #7F1D24; border-radius: 4px; padding: 3px 10px; }
+      .s5-selcap {
+        position: absolute; left: 140px; top: 800px; width: 470px; height: 84px; border-radius: 42px;
+        border: 2px solid #3DD68C; background: #121826; color: #3DD68C;
+        display: flex; align-items: center; justify-content: center; font-size: 25px;
+      }
+      .s5-store { position: absolute; left: 1220px; top: 280px; width: 560px; height: 470px; padding: 26px 30px; }
+      .s5-storetitle { font-size: 24px; color: #8B94A7; letter-spacing: 0.1em; margin-bottom: 20px; }
+      .s5-ver {
+        border: 2px solid #14532D; border-radius: 8px; background: #0E1A14;
+        padding: 20px 24px; font-size: 23px; color: #3DD68C; margin-bottom: 16px;
+      }
+      .s5-ver .meta { font-size: 19px; color: #8B94A7; margin-top: 6px; }
+      .s5-verold { border-color: #2A3447; color: #8B94A7; background: #0E1420; }
+      .s5-svg { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; pointer-events: none; }
+      .s5-path { fill: none; stroke-width: 5; stroke-dasharray: 1; stroke-dashoffset: 1; }
+      .s5-pathdel { stroke: #E5484D; }
+      .s5-pathptr { stroke: #6B7894; stroke-width: 4; }
+      .s5-pathsel { stroke: #3DD68C; }
+      .s5-plabel { position: absolute; font-size: 20px; padding: 5px 14px; border-radius: 4px; background: #0E1420; }
+      .s5-plabel.del { left: 700px; top: 316px; color: #F2555A; border: 2px solid #7F1D24; }
+      .s5-plabel.ptr { left: 800px; top: 470px; color: #C8D0DE; border: 2px solid #4A5878; }
+      .s5-plabel.sel { left: 700px; top: 836px; color: #3DD68C; border: 2px solid #14532D; }
+      .s5-caption { position: absolute; top: 938px; left: 140px; font-size: 33px; font-weight: 350; }
+      .s5-foot { position: absolute; top: 996px; left: 140px; font-size: 25px; font-weight: 350; color: #8B94A7; }
+
+      /* ── N1 版本鏈與可見性 ─────────────────── */
+      .n1-glow { top: -560px; left: 300px; background: radial-gradient(circle, rgba(61,214,140,0.17) 0%, rgba(61,214,140,0) 62%); }
+      .n1-ghost { position: absolute; right: -30px; bottom: -120px; font-size: 360px; color: rgba(74,88,120,0.06); letter-spacing: -0.02em; }
+      .n1-kicker { position: absolute; top: 116px; left: 140px; color: #3DD68C; }
+      .n1-title { position: absolute; top: 154px; left: 140px; font-size: 60px; }
+      /* 快照基準橫條 */
+      .n1-snap {
+        position: absolute; top: 256px; left: 140px; width: 1640px; height: 96px;
+        border: 2px solid #14532D; border-radius: 10px; background: #0E1A14;
+        display: flex; align-items: center; padding: 0 32px;
+      }
+      .n1-snapline { font-size: 24px; color: #C8D0DE; line-height: 1.4; }
+      .n1-snapline b { color: #3DD68C; font-weight: 700; }
+      .n1-snapline .x { color: #F2555A; font-weight: 700; }
+      .n1-snaptag { display: inline-block; min-width: 60px; color: #3DD68C; font-weight: 700; margin-right: 14px; }
+      /* 動線提示 */
+      .n1-flow { position: absolute; top: 400px; left: 140px; font-size: 23px; color: #8B94A7; }
+      .n1-flow b { color: #C8D0DE; font-weight: 700; }
+      /* 版本卡(內含判決) */
+      .n1-card { position: absolute; top: 450px; height: 330px; padding: 24px 30px; }
+      .n1-ca { left: 130px; width: 500px; border-color: #E5484D; }
+      .n1-cb { left: 710px; width: 500px; border-color: #3DD68C; background: #0E1A14; }
+      .n1-cc { left: 1290px; width: 480px; opacity: 0.55; }
+      .n1-cnum { font-size: 27px; font-weight: 700; margin-bottom: 12px; }
+      .n1-ca .n1-cnum { color: #F2555A; }
+      .n1-cb .n1-cnum { color: #3DD68C; }
+      .n1-cc .n1-cnum { color: #8B94A7; }
+      .n1-cstate { font-size: 23px; color: #C8D0DE; line-height: 1.5; min-height: 110px; }
+      .n1-cstate .dim { color: #8B94A7; }
+      .n1-cverdict { padding-top: 18px; border-top: 2px solid #2A3447; font-size: 24px; font-weight: 700; line-height: 1.45; }
+      .n1-ca .n1-cverdict { color: #F2555A; }
+      .n1-cb .n1-cverdict { color: #3DD68C; }
+      .n1-cc .n1-cverdict { color: #8B94A7; }
+      /* 卡片之間的箭頭(放在 gap 裡,不被卡片蓋住) */
+      .n1-arrow { position: absolute; top: 604px; font-size: 44px; color: #6B7894; }
+      .n1-a1 { left: 648px; }
+      .n1-a2 { left: 1228px; }
+      /* 游標 */
+      .n1-cursor {
+        position: absolute; top: 432px; left: 250px; width: 24px; height: 24px; border-radius: 50%;
+        background: #3DD68C; box-shadow: 0 0 22px rgba(61,214,140,0.85);
+      }
+      /* 底部 */
+      .n1-caption { position: absolute; top: 800px; left: 140px; width: 1640px; font-size: 26px; font-weight: 350; line-height: 1.5; }
+      .n1-caption b { color: #3DD68C; font-weight: 700; }
+      .n1-v40note { position: absolute; top: 884px; left: 140px; width: 1640px; font-size: 25px; font-weight: 350; color: #E8ECF4; line-height: 1.5; }
+      .n1-v40note b { color: #F0B429; font-weight: 700; }
+      .n1-bottom { position: absolute; bottom: 28px; left: 140px; font-size: 19px; color: #8B94A7; letter-spacing: 0.04em; }
+
+      /* ── VZ 可見性判斷三問 ───────────────────── */
+      .vz-glow { top: -560px; left: 400px; background: radial-gradient(circle, rgba(61,214,140,0.16) 0%, rgba(61,214,140,0) 62%); }
+      .vz-ghost { position: absolute; right: 20px; bottom: -120px; font-size: 360px; font-weight: 900; color: rgba(74,88,120,0.06); letter-spacing: -0.04em; }
+      .vz-kicker { position: absolute; top: 116px; left: 140px; color: #3DD68C; }
+      .vz-title { position: absolute; top: 154px; left: 140px; font-size: 60px; }
+      .vz-lead { position: absolute; top: 256px; left: 140px; font-size: 24px; color: #8B94A7; }
+      .vz-lead b { color: #C8D0DE; font-weight: 700; }
+      .vz-q { position: absolute; left: 200px; width: 1520px; border-radius: 12px; background: #121826; border: 2px solid #2A3447; padding: 22px 36px; display: flex; align-items: center; }
+      .vz-q1 { top: 314px; border-color: #3DD68C; background: #0E1A14; }
+      .vz-q2 { top: 488px; }
+      .vz-q3 { top: 662px; border-style: dashed; }
+      .vz-qnum { flex: none; font-size: 40px; font-weight: 700; color: #8B94A7; margin-right: 28px; }
+      .vz-q1 .vz-qnum { color: #3DD68C; }
+      .vz-qbody { flex: 1; }
+      .vz-qmain { font-size: 27px; color: #E8ECF4; line-height: 1.35; }
+      .vz-qsub { font-size: 20px; color: #8B94A7; margin-top: 5px; }
+      .vz-qsub .mono { color: #C8D0DE; }
+      .vz-qout { flex: none; width: 430px; text-align: right; font-size: 24px; font-weight: 700; line-height: 1.35; }
+      .vz-out-go { color: #3DD68C; }
+      .vz-out-loop { color: #8B94A7; }
+      .vz-no { position: absolute; left: 250px; font-size: 21px; color: #8B94A7; letter-spacing: 0.06em; }
+      .vz-no1 { top: 452px; }
+      .vz-no2 { top: 626px; }
+      .vz-foot { position: absolute; bottom: 64px; left: 140px; width: 1640px; font-size: 29px; font-weight: 350; color: #E8ECF4; line-height: 1.5; }
+      .vz-foot b { color: #3DD68C; font-weight: 700; }
+      .vz-bottom { position: absolute; bottom: 28px; left: 140px; font-size: 19px; color: #8B94A7; letter-spacing: 0.04em; }
+
+      /* ── DV 章節過場(PART 2)───────────────── */
+      .dv-glow { top: -160px; left: 360px; width: 1200px; height: 1200px; background: radial-gradient(circle, rgba(61,214,140,0.14) 0%, rgba(61,214,140,0) 60%); }
+      .dv-wrap { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      .dv-part { font-size: 30px; letter-spacing: 0.5em; color: #3DD68C; margin-bottom: 18px; }
+      .dv-title { font-size: 128px; letter-spacing: 0.06em; line-height: 1; }
+      .dv-sub { margin-top: 38px; max-width: 1240px; text-align: center; font-size: 32px; font-weight: 350; color: #8B94A7; line-height: 1.6; }
+      .dv-sub b { color: #E8ECF4; font-weight: 700; }
+      .dv-hint { margin-top: 48px; font-size: 24px; letter-spacing: 0.12em; color: #3DD68C; }
+
+      /* ── MAP 範式轉移總覽 ───────────────────── */
+      .map-glow { top: -600px; left: 200px; background: radial-gradient(circle, rgba(61,214,140,0.16) 0%, rgba(61,214,140,0) 62%); }
+      .map-kicker { position: absolute; top: 116px; left: 140px; color: #3DD68C; }
+      .map-title { position: absolute; top: 154px; left: 140px; font-size: 58px; }
+      /* 左欄:預設世界(鎖) */
+      .map-old { position: absolute; top: 268px; left: 140px; width: 540px; height: 620px; border: 2px solid #6B5418; border-radius: 12px; background: #161306; padding: 30px 34px; }
+      .map-colhead { font-size: 30px; font-weight: 700; margin-bottom: 6px; }
+      .map-old .map-colhead { color: #F0B429; }
+      .map-colsub { font-size: 21px; color: #8B94A7; margin-bottom: 24px; }
+      .map-oldrow { font-size: 25px; color: #C8D0DE; line-height: 1.5; margin-bottom: 16px; }
+      .map-oldrow .mono { color: #F2555A; }
+      .map-olddead { margin-top: 14px; font-size: 26px; font-weight: 700; color: #F2555A; }
+      .map-oldnone { margin-top: 26px; padding-top: 20px; border-top: 2px solid #3A3320; font-size: 22px; color: #8B94A7; line-height: 1.5; }
+      /* 右欄:RCSI 世界(版本) */
+      .map-new { position: absolute; top: 268px; left: 740px; width: 1040px; height: 620px; border: 2px solid #14532D; border-radius: 12px; background: #0E1A14; padding: 30px 40px; }
+      .map-new .map-colhead { color: #3DD68C; }
+      .map-flow { margin-top: 18px; }
+      .map-node { display: flex; align-items: center; gap: 16px; margin-bottom: 9px; }
+      .map-nlabel { font-size: 24px; color: #E8ECF4; }
+      .map-nlabel b { color: #3DD68C; font-weight: 700; }
+      .map-nlabel .tag { font-size: 18px; color: #8B94A7; margin-left: 8px; }
+      .map-arrow { color: #4A5878; font-size: 22px; margin-left: 8px; }
+      .map-branch { display: flex; gap: 16px; margin: 10px 0 10px 4px; }
+      .map-bcard { flex: 1; border: 2px solid #2A3447; border-radius: 8px; background: #101826; padding: 12px 16px; font-size: 21px; color: #C8D0DE; line-height: 1.4; }
+      .map-bcard b { color: #3DD68C; font-weight: 700; }
+      .map-storeline { display: flex; align-items: center; gap: 12px; margin-top: 4px; font-size: 21px; color: #8B94A7; }
+      .map-storeline .pill { border: 2px solid #2A3447; border-radius: 6px; padding: 6px 12px; color: #C8D0DE; }
+      .map-storeline .pillp { border-color: #4A5878; color: #9AA6BD; font-size: 18px; }
+      /* 底部核心 */
+      .map-core { position: absolute; left: 140px; top: 916px; width: 1640px; font-size: 27px; font-weight: 350; color: #E8ECF4; line-height: 1.5; }
+      .map-core b { color: #3DD68C; font-weight: 700; }
+      .map-bottom { position: absolute; bottom: 30px; left: 140px; font-size: 19px; color: #8B94A7; letter-spacing: 0.04em; }
+
+      /* ── LK 鎖的種類 ───────────────────────── */
+      .lk-glow { top: -640px; left: -380px; background: radial-gradient(circle, rgba(74,88,120,0.30) 0%, rgba(74,88,120,0) 62%); }
+      .lk-ghost { position: absolute; right: -20px; bottom: -90px; font-size: 360px; font-weight: 900; color: rgba(74,88,120,0.06); letter-spacing: -0.04em; }
+      .lk-kicker { position: absolute; top: 116px; left: 140px; }
+      .lk-title { position: absolute; top: 154px; left: 140px; font-size: 60px; }
+      .lk-head { position: absolute; top: 270px; left: 168px; width: 1584px; display: flex; font-size: 20px; color: #8B94A7; letter-spacing: 0.06em; }
+      .lk-head .h1 { flex: none; width: 316px; }
+      .lk-head .h2 { flex: none; width: 470px; }
+      .lk-head .h3 { flex: none; width: 360px; }
+      .lk-head .h4 { flex: 1; }
+      .lk-table { position: absolute; top: 308px; left: 140px; width: 1640px; }
+      .lk-row { display: flex; align-items: center; height: 100px; padding: 0 28px; border-radius: 10px; background: #121826; border: 2px solid #2A3447; margin-bottom: 13px; }
+      .lk-row.hot { border-color: #3DD68C; background: #0E1A14; }
+      .lk-badge { flex: none; width: 72px; height: 62px; border-radius: 12px; border: 3px solid #6B7894; display: flex; align-items: center; justify-content: center; font-size: 27px; font-weight: 700; color: #C8D0DE; }
+      .lk-row.hot .lk-badge { border-color: #3DD68C; color: #3DD68C; }
+      .lk-badge.x { border-color: #E5484D; color: #F2555A; }
+      .lk-badge.sm { font-size: 20px; }
+      .lk-name { flex: none; width: 220px; padding-left: 24px; font-size: 25px; font-weight: 700; }
+      .lk-name .en { display: block; font-size: 17px; color: #8B94A7; font-weight: 400; letter-spacing: 0.04em; }
+      .lk-when { flex: none; width: 470px; font-size: 22px; color: #C8D0DE; line-height: 1.4; }
+      .lk-hold { flex: none; width: 360px; font-size: 22px; color: #8B94A7; line-height: 1.4; }
+      .lk-rcsi { flex: 1; font-size: 22px; color: #8B94A7; line-height: 1.4; }
+      .lk-row.hot .lk-rcsi { color: #3DD68C; font-weight: 700; }
+      .lk-foot { position: absolute; bottom: 52px; left: 140px; width: 1640px; font-size: 30px; font-weight: 350; line-height: 1.5; }
+      .lk-foot b { color: #3DD68C; font-weight: 700; }
+
+      /* ── XN XSN 定義與舉例 ───────────────────── */
+      .xn-glow { top: -560px; left: 500px; background: radial-gradient(circle, rgba(74,88,120,0.30) 0%, rgba(74,88,120,0) 62%); }
+      .xn-ghost { position: absolute; right: 40px; bottom: -130px; font-size: 420px; font-weight: 900; color: rgba(74,88,120,0.06); letter-spacing: -0.04em; }
+      .xn-kicker { position: absolute; top: 116px; left: 140px; color: #8B94A7; }
+      .xn-title { position: absolute; top: 154px; left: 140px; font-size: 60px; }
+      .xn-def {
+        position: absolute; top: 256px; left: 140px; width: 1640px; height: 138px;
+        border: 2px solid #2A3447; border-radius: 10px; background: #121826;
+        display: flex; flex-direction: column; justify-content: center; gap: 13px; padding: 0 32px;
+      }
+      .xn-defline { font-size: 24px; color: #C8D0DE; line-height: 1.4; }
+      .xn-defline b { color: #E8ECF4; font-weight: 700; }
+      .xn-tag { display: inline-block; min-width: 56px; color: #8B94A7; font-weight: 700; margin-right: 16px; }
+      .xn-axis-label { position: absolute; top: 470px; left: 140px; font-size: 23px; color: #8B94A7; }
+      .xn-line { position: absolute; top: 593px; left: 300px; width: 1260px; height: 4px; background: #4A5878; }
+      .xn-node { position: absolute; top: 530px; width: 0; }
+      .xn-num { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 38px; font-weight: 700; color: #E8ECF4; white-space: nowrap; }
+      .xn-dot { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); width: 26px; height: 26px; border-radius: 50%; border: 3px solid #6B7894; background: #0B0E14; }
+      .xn-card { position: absolute; top: 96px; left: 50%; transform: translateX(-50%); width: 380px; text-align: center; font-size: 22px; color: #8B94A7; line-height: 1.5; }
+      .xn-card b { color: #E8ECF4; font-weight: 700; }
+      .xn-node.xn-old .xn-num { color: #8B94A7; }
+      .xn-node.xn-go .xn-num { color: #3DD68C; }
+      .xn-node.xn-go .xn-dot { border-color: #3DD68C; background: #14532D; }
+      .xn-node.xn-go .xn-card b { color: #3DD68C; }
+      .xn-node.xn-caution .xn-num { color: #F0B429; }
+      .xn-node.xn-caution .xn-dot { border-color: #F0B429; background: #6B5418; }
+      .xn-node.xn-caution .xn-card b { color: #F0B429; }
+      .xn-node.xn-alarm .xn-num { color: #F2555A; }
+      .xn-node.xn-alarm .xn-dot { border-color: #E5484D; background: #7F1D24; }
+      .xn-node.xn-alarm .xn-card b { color: #F2555A; }
+      .xn-foot { position: absolute; bottom: 78px; left: 140px; width: 1640px; font-size: 30px; font-weight: 350; color: #E8ECF4; line-height: 1.5; }
+      .xn-foot b { color: #F0B429; font-weight: 700; }
+      .xn-foot .xn-next { color: #8B94A7; }
+
+      /* ── N2 快照粒度 ───────────────────────── */
+      .n2-glow { top: -620px; left: -380px; background: radial-gradient(circle, rgba(61,214,140,0.16) 0%, rgba(61,214,140,0) 62%); }
+      .n2-kicker { position: absolute; top: 116px; left: 140px; color: #3DD68C; }
+      .n2-title { position: absolute; top: 154px; left: 140px; font-size: 60px; }
+      .n2-panel { position: absolute; top: 268px; width: 800px; height: 460px; padding: 26px 36px; }
+      .n2-pl { left: 140px; border-color: #14532D; background: #0E1A14; }
+      .n2-pr { left: 980px; }
+      .n2-phead { font-size: 29px; font-weight: 700; margin-bottom: 16px; }
+      .n2-pl .n2-phead { color: #3DD68C; }
+      .n2-pr .n2-phead { color: #C8D0DE; }
+      .n2-code { font-size: 23px; line-height: 1.95; color: #C8D0DE; }
+      .n2-code .ln { white-space: nowrap; }
+      .n2-snapchip {
+        display: inline-block; border: 2px solid #14532D; color: #3DD68C; border-radius: 4px;
+        padding: 0 10px; font-size: 19px; margin: 0 8px; vertical-align: 2px;
+      }
+      .n2-interject { color: #F0B429; font-size: 21px; }
+      .n2-err { color: #F2555A; font-weight: 700; }
+      .n2-self { display: inline-block; margin-left: 16px; font-size: 18px; color: #8B94A7; }
+      .n2-okself { color: #3DD68C; }
+      .n2-ok { color: #3DD68C; font-weight: 700; }
+      .n2-pfoot { margin-top: 16px; font-size: 21px; color: #8B94A7; line-height: 1.55; }
+      .n2-verdict {
+        position: absolute; left: 140px; top: 770px; width: 1640px; height: 130px;
+        border: 2px solid #14532D; border-radius: 10px; background: #0E1A14;
+        display: flex; align-items: center; padding: 0 44px;
+        font-size: 30px; line-height: 1.5;
+      }
+      .n2-verdict b { color: #3DD68C; }
+      .n2-bottom { position: absolute; bottom: 56px; left: 140px; font-size: 22px; color: #8B94A7; letter-spacing: 0.04em; }
+
+      /* ── N3 長交易與全域水位 ─────────────────── */
+      .n3-glow { top: -540px; left: 420px; background: radial-gradient(circle, rgba(240,180,41,0.16) 0%, rgba(240,180,41,0) 62%); }
+      .n3-kicker { position: absolute; top: 116px; left: 140px; color: #F0B429; }
+      .n3-title { position: absolute; top: 154px; left: 140px; font-size: 60px; }
+      .n3-case { position: absolute; top: 256px; width: 520px; height: 158px; padding: 22px 28px; }
+      .n3-k1 { left: 140px; } .n3-k2 { left: 700px; } .n3-k3 { left: 1260px; }
+      .n3-khead { font-size: 25px; font-weight: 700; color: #F0B429; margin-bottom: 8px; }
+      .n3-kline { font-size: 21px; color: #8B94A7; line-height: 1.55; }
+      .n3-tline { position: absolute; left: 240px; top: 540px; width: 1440px; height: 4px; background: #4A5878; transform-origin: left center; }
+      .n3-tick { position: absolute; top: 562px; font-size: 21px; color: #8B94A7; width: 120px; text-align: center; }
+      .n3-t09 { left: 240px; } .n3-t10 { left: 900px; } .n3-t11 { left: 1560px; }
+      .n3-pin { position: absolute; top: 528px; width: 28px; height: 28px; border-radius: 50%; }
+      .n3-p09 { left: 286px; background: #E5484D; box-shadow: 0 0 18px rgba(229,72,77,0.7); }
+      .n3-p11 { left: 1606px; background: #3DD68C; box-shadow: 0 0 18px rgba(61,214,140,0.7); }
+      .n3-lab { position: absolute; top: 424px; padding: 12px 18px; border-radius: 8px; background: #121826; font-size: 21px; line-height: 1.5; }
+      .n3-l09 { left: 160px; width: 460px; border: 2px solid #7F1D24; color: #C8D0DE; }
+      .n3-l11 { left: 1300px; width: 460px; border: 2px solid #14532D; color: #C8D0DE; }
+      .n3-wedgezone { position: absolute; left: 300px; top: 604px; width: 1320px; height: 190px; }
+      .n3-wedge {
+        position: absolute; inset: 0; transform-origin: left center;
+        background: linear-gradient(180deg, rgba(240,180,41,0.55) 0%, rgba(240,180,41,0.18) 100%);
+        clip-path: polygon(0% 100%, 100% 0%, 100% 100%);
+      }
+      .n3-flush { position: absolute; left: 300px; top: 784px; width: 1320px; height: 10px; background: #3DD68C; transform-origin: left center; }
+      .n3-anno {
+        position: absolute; left: 360px; top: 690px; width: 1200px; text-align: center;
+        font-size: 26px; color: #E8ECF4; text-shadow: 0 4px 18px rgba(7,9,14,0.9);
+      }
+      .n3-caption { position: absolute; top: 836px; left: 140px; font-size: 30px; font-weight: 350; line-height: 1.5; }
+      .n3-caption b { color: #F0B429; font-weight: 700; }
+      .n3-nuance { position: absolute; top: 896px; left: 140px; width: 1640px; font-size: 24px; font-weight: 350; color: #8B94A7; line-height: 1.6; }
+      .n3-bottom { position: absolute; bottom: 56px; left: 140px; font-size: 21px; color: #8B94A7; letter-spacing: 0.04em; }
+
+      /* ── S6 效益與證據 ─────────────────────── */
+      .s6-glow { top: -640px; left: -420px; background: radial-gradient(circle, rgba(61,214,140,0.18) 0%, rgba(61,214,140,0) 62%); }
+      .s6-ghost { position: absolute; right: -40px; top: 110px; font-size: 480px; font-weight: 900; color: rgba(61,214,140,0.07); line-height: 1; }
+      .s6-kicker { position: absolute; top: 116px; left: 140px; color: #3DD68C; }
+      .s6-title { position: absolute; top: 154px; left: 140px; font-size: 60px; }
+      .s6-card { position: absolute; width: 800px; height: 200px; padding: 30px 38px; }
+      .s6-c1 { left: 140px; top: 290px; }
+      .s6-c2 { left: 980px; top: 290px; }
+      .s6-c3 { left: 140px; top: 520px; }
+      .s6-c4 { left: 980px; top: 520px; }
+      .s6-chead { font-size: 34px; margin-bottom: 12px; display: flex; align-items: center; gap: 16px; }
+      .s6-tick { width: 40px; height: 40px; flex: none; }
+      .s6-tick path { fill: none; stroke: #3DD68C; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+      .s6-cline { font-size: 24px; font-weight: 350; color: #8B94A7; line-height: 1.5; }
+      .s6-cline b { color: #F2555A; font-weight: 700; }
+      .s6-azure {
+        position: absolute; left: 140px; top: 790px; width: 1640px; height: 150px;
+        border: 2px solid #14532D; border-radius: 10px; background: #0E1A14;
+        display: flex; align-items: center; padding: 0 48px; gap: 36px;
+      }
+      .s6-azure .big { font-size: 33px; font-weight: 700; color: #3DD68C; flex: none; width: 620px; line-height: 1.4; }
+      .s6-azure .bigmono { font-size: 25px; font-weight: 700; letter-spacing: 0.02em; }
+      .s6-azure .cite { font-size: 23px; color: #8B94A7; line-height: 1.5; }
+
+      /* ── S7 風險 ───────────────────────────── */
+      .s7-glow { top: -560px; left: 360px; background: radial-gradient(circle, rgba(240,180,41,0.16) 0%, rgba(240,180,41,0) 62%); }
+      .s7-ghost { position: absolute; right: 30px; bottom: -40px; font-size: 430px; font-weight: 900; color: rgba(240,180,41,0.07); line-height: 1; }
+      .s7-kicker { position: absolute; top: 116px; left: 140px; color: #F0B429; }
+      .s7-title { position: absolute; top: 154px; left: 140px; font-size: 60px; }
+      .s7-row { position: absolute; left: 140px; width: 1640px; height: 190px; }
+      .s7-r1 { top: 280px; } .s7-r2 { top: 500px; } .s7-r3 { top: 720px; }
+      .s7-cost {
+        position: absolute; left: 0; top: 0; width: 740px; height: 190px;
+        border: 2px solid #6B5418; border-radius: 10px; background: #161306;
+        padding: 26px 32px;
+      }
+      .s7-costhead { font-size: 30px; font-weight: 700; color: #F0B429; margin-bottom: 10px; }
+      .s7-costline { font-size: 23px; font-weight: 350; color: #C8D0DE; line-height: 1.5; }
+      .s7-arrow { position: absolute; left: 752px; top: 72px; width: 136px; text-align: center; font-size: 24px; color: #8B94A7; white-space: nowrap; }
+      .s7-fix {
+        position: absolute; left: 900px; top: 0; width: 740px; height: 190px;
+        border: 2px solid #2A3447; border-radius: 10px; background: #121826;
+        padding: 26px 32px;
+      }
+      .s7-fixhead { font-size: 26px; font-weight: 700; color: #E8ECF4; margin-bottom: 10px; }
+      .s7-fixline { font-size: 23px; font-weight: 350; color: #8B94A7; line-height: 1.5; }
+      .s7-bottom { position: absolute; bottom: 48px; left: 140px; font-size: 22px; color: #8B94A7; letter-spacing: 0.04em; }
+
+      /* ── S8 行動方案 + 金句 ─────────────────── */
+      .s8-glow { top: -480px; left: 200px; background: radial-gradient(circle, rgba(61,214,140,0.16) 0%, rgba(61,214,140,0) 62%); }
+      .s8-planewrap { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; }
+      .s8-kicker { position: absolute; top: 150px; left: 140px; color: #3DD68C; }
+      .s8-title { position: absolute; top: 190px; left: 140px; font-size: 60px; }
+      .s8-line { position: absolute; left: 360px; top: 470px; width: 1200px; height: 4px; background: #2A3447; transform-origin: left center; }
+      .s8-dot {
+        position: absolute; top: 422px; width: 100px; height: 100px; border-radius: 50%;
+        background: #121826; border: 3px solid #3DD68C; color: #3DD68C;
+        display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 700;
+      }
+      .s8-d1 { left: 310px; } .s8-d2 { left: 910px; } .s8-d3 { left: 1510px; }
+      .s8-steptext { position: absolute; top: 570px; width: 480px; text-align: center; }
+      .s8-t1 { left: 120px; } .s8-t2 { left: 720px; } .s8-t3 { left: 1320px; }
+      .s8-sthead { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
+      .s8-stline { font-size: 24px; font-weight: 350; color: #8B94A7; line-height: 1.55; }
+      .s8-stmono { margin-top: 12px; font-size: 19px; color: #3DD68C; }
+      .s8-quotewrap { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; }
+      .s8-q1, .s8-q2 {
+        position: absolute; left: 0; width: 1920px; text-align: center;
+        font-size: 66px; line-height: 1.4; letter-spacing: 0.04em;
+      }
+      .s8-q1 { top: 380px; }
+      .s8-q2 { top: 500px; }
+      .s8-q2 .em { color: #3DD68C; }
+      .s8-mark { position: absolute; top: 690px; left: 0; width: 1920px; text-align: center; font-size: 27px; color: #3DD68C; letter-spacing: 0.08em; }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="265"
+      data-width="1920"
+      data-height="1080"
+    >
+      <!-- ════ S1 深夜告警 ════ -->
+      <div id="s1" class="scene">
+        <div class="inner">
+          <div class="grid-bg"></div>
+          <div class="glow s1-glow" data-layout-ignore></div>
+          <svg class="s1-ghostlock" width="460" height="560" viewBox="0 0 46 56" data-layout-allow-overflow>
+            <rect x="6" y="24" width="34" height="26" rx="4" fill="none" stroke="#E5484D" stroke-width="3"/>
+            <path d="M 13 24 V 15 a 10 10 0 0 1 20 0 V 24" fill="none" stroke="#E5484D" stroke-width="3"/>
+          </svg>
+          <div class="toprule"></div>
+          <div class="corner-tl mono">RCSI DEEP-DIVE · 01 / 事故</div>
+          <div class="corner-br mono">DB PLATFORM · PROD</div>
+          <div class="s1-host"><span class="chip mono">PROD-SQL01 · 生產資料庫</span></div>
+          <div class="s1-ts mono">03:17:42</div>
+          <div class="s1-term">
+            <div class="s1-termbar">
+              <div class="s1-dot red"></div><div class="s1-dot"></div><div class="s1-dot"></div>
+              <div class="s1-termtitle mono">deadlock-alert.log</div>
+            </div>
+            <div class="s1-termbody mono">
+              <div class="s1-line s1-l1 s1-msg1">Msg 1205, Level 13, State 51, Line 4</div>
+              <div class="s1-line s1-l2">Transaction (Process ID 52) was deadlocked on lock</div>
+              <div class="s1-line s1-l3">resources with another process and has been chosen</div>
+              <div class="s1-line s1-l4">as the <span class="s1-victim">deadlock victim</span>. Rerun the transaction.</div>
+            </div>
+          </div>
+          <div class="s1-rule"></div>
+          <div class="s1-head serif">又一筆交易,被資料庫親手砍掉。</div>
+          <div class="s1-sub">SELECT 遇上 DELETE —— 同一張表,互相等鎖,兩敗俱傷。</div>
+          <div class="s1-chips">
+            <span class="chip mono alarm">error 1205 · 近期接連發生</span>
+            <span class="chip mono">victim: spid 52 (SELECT)</span>
+            <span class="chip mono">isolation: READ COMMITTED(預設)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ S2 預設世界的鎖 ════ -->
+      <div id="s2" class="scene">
+        <div class="inner">
+          <div class="grid-bg"></div>
+          <div class="glow s2-glow" data-layout-ignore></div>
+          <div class="s2-ghost serif" data-layout-allow-overflow>S·X</div>
+          <div class="toprule"></div>
+          <div class="corner-tl mono">RCSI DEEP-DIVE · 02 / 機制</div>
+          <div class="corner-br mono">DB PLATFORM · PROD</div>
+          <div class="s2-kicker mono kicker">ISOLATION LEVEL: READ COMMITTED(SQL SERVER 預設)</div>
+          <div class="s2-title serif">預設世界:讀和寫,搶同一把鎖</div>
+          <div class="s2-diagram">
+            <div class="s2-cap s2-capsel mono">SELECT … FROM Orders</div>
+            <div class="s2-cap s2-capdel mono">DELETE Orders WHERE …</div>
+            <div class="s2-wait mono">WAITING…</div>
+            <div class="s2-locklabel ls">S 共享鎖(讀)</div>
+            <div class="s2-locklabel lx">X 排他鎖(寫)</div>
+            <div class="s2-lock s2-locks mono">S</div>
+            <div class="s2-lock s2-lockx mono">X</div>
+            <div class="s2-table card">
+              <div class="s2-tablename">Orders 資料表</div>
+              <div class="s2-tablerows mono">1.2M rows</div>
+            </div>
+          </div>
+          <div class="s2-matrix card">
+            <div class="s2-mtitle mono">鎖相容性矩陣</div>
+            <div class="s2-mrow"><span class="mono">S + S</span><span class="s2-mok">✓</span><span class="s2-mdesc">同時讀,沒問題</span></div>
+            <div class="s2-mrow"><span class="mono">S + X</span><span class="s2-mno">✗</span><span class="s2-mdesc">讀寫互卡,必等待</span></div>
+            <div class="s2-mrow"><span class="mono">X + X</span><span class="s2-mno">✗</span><span class="s2-mdesc">寫寫互卡,必等待</span></div>
+          </div>
+          <div class="s2-caption">讀,要拿 S 鎖;刪,要拿 X 鎖。<b>S 與 X 互不相容</b> —— 誰晚到,誰就排隊。</div>
+          <div class="s2-caption2">排隊還算小事。真正的災難,是兩個人「互相」等對方手上的鎖……</div>
+        </div>
+      </div>
+
+      <!-- ════ S3 死結成環 ════ -->
+      <div id="s3" class="scene">
+        <div class="inner">
+          <div class="grid-bg"></div>
+          <div class="glow s3-glow" data-layout-ignore></div>
+          <div class="toprule"></div>
+          <div class="corner-tl mono">RCSI DEEP-DIVE · 03 / 死結重演</div>
+          <div class="corner-br mono">DB PLATFORM · PROD</div>
+          <div class="s3-kicker mono kicker">DEADLOCK GRAPH — 還原那天凌晨發生的事</div>
+          <div class="s3-title serif">死結,是怎麼長出來的</div>
+
+          <svg class="s3-svg" viewBox="0 0 1920 1080">
+            <path id="s3e1" class="s3-edge s3-hold" pathLength="1" d="M 400 470 L 580 350" />
+            <path id="s3e2" class="s3-edge s3-hold" pathLength="1" d="M 1060 560 L 880 690" />
+            <path id="s3e3" class="s3-edge s3-wait" pathLength="1" d="M 400 565 L 580 700" />
+            <path id="s3e4" class="s3-edge s3-wait" pathLength="1" d="M 1060 475 L 880 345" />
+          </svg>
+          <div class="s3-edgelabel hold mono" id="s3l1" style="left: 400px; top: 372px;">① 持有 S 鎖</div>
+          <div class="s3-edgelabel hold mono" id="s3l2" style="left: 942px; top: 640px;">② 持有 X 鎖</div>
+          <div class="s3-edgelabel wait mono" id="s3l3" style="left: 396px; top: 642px;">③ 等待…</div>
+          <div class="s3-edgelabel wait mono" id="s3l4" style="left: 950px; top: 372px;">④ 等待…</div>
+
+          <div class="s3-node s3-proc s3-psel mono"><span>spid 52 · SELECT</span><span class="s3-nodesub">查訂單(走索引)</span></div>
+          <div class="s3-node s3-proc s3-pdel mono"><span>spid 87 · DELETE</span><span class="s3-nodesub">刪歸檔資料</span></div>
+          <div class="s3-node s3-res s3-rnc mono"><span>NC Index · IX_Orders_No</span><span class="s3-nodesub">非叢集索引</span></div>
+          <div class="s3-node s3-res s3-rcl mono"><span>Clustered Index</span><span class="s3-nodesub">資料本體</span></div>
+          <div class="s3-cycle mono">⟳ wait-for graph 成環</div>
+
+          <div class="s3-steps">
+            <div class="s3-step" id="s3s1">① SELECT 先鎖住<b>索引列</b>(S 鎖),準備回表查資料</div>
+            <div class="s3-step" id="s3s2">② 同一瞬間,DELETE 鎖住<b>資料列</b>(X 鎖)</div>
+            <div class="s3-step" id="s3s3">③ SELECT 做 Key Lookup → 要等 DELETE 的資料列</div>
+            <div class="s3-step" id="s3s4">④ DELETE 要同步刪索引列 → 反過來等 SELECT。<b>環,閉合了。</b></div>
+          </div>
+
+          <div class="s3-scan" data-layout-allow-overflow></div>
+          <div class="s3-x" data-layout-allow-overflow>✗</div>
+          <div class="s3-victim serif" data-layout-allow-overflow>犧 牲 者</div>
+          <div class="s3-victimsub" data-layout-allow-overflow>死結偵測器每 5 秒掃描一次 —— 選 rollback 成本較低的那個,當場回滾。</div>
+          <div class="s3-closing">這不是誰的程式寫錯了 —— 是預設隔離級別下,遲早會發生的宿命。</div>
+          <div class="s3-bottom mono">lock monitor · scan interval 5s · victim = least rollback cost · error 1205 回傳給應用程式</div>
+          <div class="s3-flash" data-layout-ignore></div>
+        </div>
+      </div>
+
+      <!-- ════ S4 一行指令 ════ -->
+      <div id="s4" class="scene">
+        <div class="inner">
+          <div class="glow s4-glow" data-layout-ignore></div>
+          <div class="corner-tl mono">RCSI DEEP-DIVE · 04 / 解方</div>
+          <div class="corner-br mono">DB PLATFORM · PROD</div>
+          <div class="s4-term">
+            <div class="s4-termbar">
+              <div class="s1-dot" style="background:#3DD68C"></div><div class="s1-dot"></div><div class="s1-dot"></div>
+              <div class="s4-termtitle mono">SSMS — master</div>
+            </div>
+            <div class="s4-termbody mono">
+              <div class="s4-line s4-sql1">ALTER DATABASE [Production]</div>
+              <div class="s4-line s4-sql2">&nbsp;&nbsp;SET READ_COMMITTED_SNAPSHOT ON</div>
+              <div class="s4-line s4-sql3">&nbsp;&nbsp;WITH ROLLBACK IMMEDIATE;<span class="s4-cursor"></span></div>
+              <div class="s4-done">Command(s) completed successfully.</div>
+            </div>
+          </div>
+          <div class="s4-head serif">讓讀的人,不再拿鎖。</div>
+          <div class="s4-notes">
+            <span class="chip mono">0 行應用程式碼修改</span>
+            <span class="chip mono">資料庫層級,一次切換</span>
+            <span class="chip mono">這就是 RCSI</span>
+          </div>
+          <div class="s4-tail">Read Committed Snapshot Isolation —— 從此,SELECT 不再和 DELETE 搶同一把鎖。</div>
+        </div>
+      </div>
+
+      <!-- ════ S5 版本快照(雙軌) ════ -->
+      <div id="s5" class="scene">
+        <div class="inner">
+          <div class="grid-bg"></div>
+          <div class="glow s5-glow" data-layout-ignore></div>
+          <div class="s5-rails" data-layout-ignore>
+            <div class="s5-rail" style="top:0"></div>
+            <div class="s5-rail" style="top:60px"></div>
+          </div>
+          <div class="toprule"></div>
+          <div class="corner-tl mono">RCSI DEEP-DIVE · 05 / 原理</div>
+          <div class="corner-br mono">DB PLATFORM · PROD</div>
+          <div class="s5-kicker mono kicker">READ_COMMITTED_SNAPSHOT = ON</div>
+          <div class="s5-title serif">寫的人改實體,讀的人看快照</div>
+
+          <svg class="s5-svg" viewBox="0 0 1920 1080">
+            <path id="s5pdel" class="s5-path s5-pathdel" pathLength="1" d="M 415 360 L 415 430" />
+            <path id="s5pptr" class="s5-path s5-pathptr" pathLength="1" d="M 700 520 L 1220 520" />
+            <path id="s5psel" class="s5-path s5-pathsel" pathLength="1" d="M 610 840 C 1000 840 1140 700 1240 560" />
+          </svg>
+
+          <div class="s5-delcap mono">DELETE — 照常拿 X 鎖</div>
+          <div class="s5-table card">
+            <div class="s5-tabletitle">Orders 資料表(實體列)</div>
+            <div class="s5-row mono"><span>#1024 · 狀態:已出貨</span><span class="s5-xbadge mono">X 鎖定中</span></div>
+          </div>
+          <div class="s5-selcap mono">SELECT — 不拿 S 鎖</div>
+          <div class="s5-store card">
+            <div class="s5-storetitle mono">tempdb · VERSION STORE</div>
+            <div class="s5-ver mono">v41 · 已提交版本(快照)<div class="meta">committed 03:17:41 — SELECT 讀這裡</div></div>
+            <div class="s5-ver s5-verold mono">v40 · 更舊版本<div class="meta">交易結束後自動清理</div></div>
+          </div>
+          <div class="s5-plabel del mono">寫:鎖實體列</div>
+          <div class="s5-plabel ptr mono">14-byte 版本指標 → 舊版本搬進 tempdb</div>
+          <div class="s5-plabel sel mono">讀:不等鎖 —— 直接讀「查詢開始那一刻」最新的已提交版本</div>
+
+          <div class="s5-caption">同一張表,<b>兩條軌道</b> —— 讀寫互不阻塞,也讀不到髒資料。</div>
+          <div class="s5-foot">寫 vs 寫?照樣排隊 —— 資料正確性不打折。(這正是它和 NOLOCK 的差別)</div>
+        </div>
+      </div>
+
+      <!-- ════ DV 章節過場 PART 2 ════ -->
+      <div id="dv" class="scene">
+        <div class="inner">
+          <div class="grid-bg"></div>
+          <div class="glow dv-glow" data-layout-ignore></div>
+          <div class="corner-tl mono">RCSI DEEP-DIVE · PART 2</div>
+          <div class="corner-br mono">DB PLATFORM · PROD</div>
+          <div class="dv-wrap">
+            <div class="dv-part mono">PART 2</div>
+            <div class="dv-title serif">拆開引擎蓋</div>
+            <div class="dv-sub">前面回答了「為什麼要開、開了之後怎樣」。接下來這一段,看 RCSI 內部到底怎麼運作 —— <b>這一整套機制,預設的 SQL Server 完全沒有。</b></div>
+            <div class="dv-hint mono">▼ 原理篇 · 給想懂機制的人</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ LK 鎖的種類 ════ -->
+      <div id="lk" class="scene">
+        <div class="inner">
+          <div class="grid-bg"></div>
+          <div class="glow lk-glow" data-layout-ignore></div>
+          <div class="lk-ghost serif" data-layout-allow-overflow>🔒</div>
+          <div class="toprule"></div>
+          <div class="corner-tl mono">RCSI DEEP-DIVE · 06 / 鎖的種類</div>
+          <div class="corner-br mono">DB PLATFORM · PROD</div>
+          <div class="lk-kicker mono kicker">LOCK MODES — 那 RCSI 到底動了哪一種鎖?</div>
+          <div class="lk-title serif">SQL Server 的鎖,有哪幾種</div>
+
+          <div class="lk-head mono">
+            <div class="h1">鎖種類</div>
+            <div class="h2">何時取得</div>
+            <div class="h3">持有到</div>
+            <div class="h4">RCSI 是否影響</div>
+          </div>
+          <div class="lk-table">
+            <div class="lk-row hot">
+              <div class="lk-badge mono">S</div>
+              <div class="lk-name">共享鎖<span class="en mono">Shared</span></div>
+              <div class="lk-when">讀取資料時(SELECT)取得</div>
+              <div class="lk-hold">讀完該列就釋放</div>
+              <div class="lk-rcsi">★ RCSI 唯一動到的:讀取改讀版本,不再取 S</div>
+            </div>
+            <div class="lk-row">
+              <div class="lk-badge x mono">X</div>
+              <div class="lk-name">排他鎖<span class="en mono">Exclusive</span></div>
+              <div class="lk-when">改資料(INSERT / UPDATE / DELETE)</div>
+              <div class="lk-hold">一直到交易 COMMIT / ROLLBACK</div>
+              <div class="lk-rcsi">不變 —— 寫入照樣鎖,寫寫照樣等</div>
+            </div>
+            <div class="lk-row">
+              <div class="lk-badge mono">U</div>
+              <div class="lk-name">更新鎖<span class="en mono">Update</span></div>
+              <div class="lk-when">改之前「搜尋目標列」的階段</div>
+              <div class="lk-hold">找到就升級成 X,否則放掉</div>
+              <div class="lk-rcsi">不變 —— 防的是兩個寫入互相升級的死結</div>
+            </div>
+            <div class="lk-row">
+              <div class="lk-badge sm mono">IX</div>
+              <div class="lk-name">意向鎖<span class="en mono">Intent</span></div>
+              <div class="lk-when">在表 / 頁宣告「底下有列被鎖」</div>
+              <div class="lk-hold">隨底層的列鎖</div>
+              <div class="lk-rcsi">不變 —— 讓引擎不必逐列掃描就知能否上鎖</div>
+            </div>
+            <div class="lk-row">
+              <div class="lk-badge sm mono">Sch</div>
+              <div class="lk-name">結構鎖<span class="en mono">Schema</span></div>
+              <div class="lk-when">查詢執行(Sch-S) / 改結構 DDL(Sch-M)</div>
+              <div class="lk-hold">該階段內</div>
+              <div class="lk-rcsi">不變(SELECT 在 RCSI 下仍持 Sch-S)</div>
+            </div>
+          </div>
+          <div class="lk-foot">五種鎖,RCSI 只拆掉「讀取的 S 鎖」這一根 —— <b>其餘四種原封不動</b>。這就是它能解死結、又不動搖寫入正確性的原因。</div>
+        </div>
+      </div>
+
+      <!-- ════ XN XSN 定義與舉例 ════ -->
+      <div id="xn" class="scene">
+        <div class="inner">
+          <div class="grid-bg"></div>
+          <div class="glow xn-glow" data-layout-ignore></div>
+          <div class="xn-ghost mono" data-layout-allow-overflow>#</div>
+          <div class="toprule"></div>
+          <div class="corner-tl mono">RCSI DEEP-DIVE · 07 / XSN</div>
+          <div class="corner-br mono">DB PLATFORM · PROD</div>
+          <div class="xn-kicker mono kicker">TRANSACTION SEQUENCE NUMBER — 先認得這把尺</div>
+          <div class="xn-title serif">XSN:一支只增不減的計數器</div>
+
+          <div class="xn-def">
+            <div class="xn-defline"><span class="xn-tag mono">定義</span><b>XSN(交易序號)= 資料庫的一支全域計數器。</b>每筆「會改資料」的交易(INSERT / UPDATE / DELETE)開始時領一個號,只增不減。</div>
+            <div class="xn-defline"><span class="xn-tag mono">關鍵</span>SELECT 不改資料 → <b>不領 XSN</b>。而每個資料版本,被蓋上「當初產生它那筆寫入交易」的 XSN。</div>
+          </div>
+
+          <div class="xn-axis-label mono">本片這一列(Orders #1024)身上會碰到的 XSN —— 由小到大排開:</div>
+          <div class="xn-line"></div>
+          <div class="xn-node xn-old" style="left: 300px;">
+            <div class="xn-num mono">XSN 63</div>
+            <div class="xn-dot"></div>
+            <div class="xn-card"><b>v40</b><br />更早的已提交版本</div>
+          </div>
+          <div class="xn-node xn-go" style="left: 720px;">
+            <div class="xn-num mono">XSN 80</div>
+            <div class="xn-dot"></div>
+            <div class="xn-card"><b>v41</b><br />這一列最後的已提交定稿</div>
+          </div>
+          <div class="xn-node xn-caution" style="left: 1140px;">
+            <div class="xn-num mono">XSN 86</div>
+            <div class="xn-dot"></div>
+            <div class="xn-card"><b>別的列</b>的交易<br />全庫最後一筆已提交</div>
+          </div>
+          <div class="xn-node xn-alarm" style="left: 1560px;">
+            <div class="xn-num mono">XSN 87</div>
+            <div class="xn-dot"></div>
+            <div class="xn-card"><b>DELETE</b> 正在改這列<br />還沒 COMMIT</div>
+          </div>
+
+          <div class="xn-foot">SELECT 在這之後才開始 → 它的「水位」定在 <b>86</b>(當下最後的已提交序號)。<span class="xn-next">下一頁:看它怎麼用 86 這把尺,挑出該讀的版本 ▶</span></div>
+        </div>
+      </div>
+
+      <!-- ════ N1 版本鏈與可見性 ════ -->
+      <div id="n1" class="scene">
+        <div class="inner">
+          <div class="grid-bg"></div>
+          <div class="glow n1-glow" data-layout-ignore></div>
+          <div class="n1-ghost mono" data-layout-allow-overflow>XSN</div>
+          <div class="toprule"></div>
+          <div class="corner-tl mono">RCSI DEEP-DIVE · 08 / 版本鏈</div>
+          <div class="corner-br mono">DB PLATFORM · PROD</div>
+          <div class="n1-kicker mono kicker">VERSION CHAIN · XSN 交易序號</div>
+          <div class="n1-title serif">RCSI 怎麼挑出「該讀哪一版」</div>
+
+          <div class="n1-snap">
+            <div class="n1-snapline"><span class="n1-snaptag mono">水位</span>SELECT 開始時定格:看得到的上限 = <b>XSN 86</b>(上一頁那把尺的最後已提交);<span class="x">XSN 87 還沒 COMMIT → 看不到</span>。</div>
+          </div>
+
+          <div class="n1-flow mono">順著每列尾端的 <b>14-byte 指標</b>,從最新版往回找,直到撞上第一個「我看得到的版本」▶</div>
+
+          <div class="n1-card card n1-ca">
+            <div class="n1-cnum mono">實體列 · XSN 87(最新)</div>
+            <div class="n1-cstate">DELETE 改到一半,<b style="color:#F2555A">還沒 COMMIT</b>。<span class="dim">被 X 鎖保護,只存在於資料表本體。</span></div>
+            <div class="n1-cverdict">✗ 還在進行中(87 &gt; 86)<br />→ 跳過,順指標往回</div>
+          </div>
+          <div class="n1-card card n1-cb">
+            <div class="n1-cnum mono">v41 · XSN 80</div>
+            <div class="n1-cstate">DELETE 動手前的<b style="color:#3DD68C">已提交定稿</b>。<span class="dim">已被搬進 tempdb 版本存放區。</span></div>
+            <div class="n1-cverdict">✓ 已提交,且 80 ≤ 86<br />→ 命中!就讀這一版</div>
+          </div>
+          <div class="n1-card card n1-cc">
+            <div class="n1-cnum mono">v40 · XSN 63</div>
+            <div class="n1-cstate">更早的已提交版本。<span class="dim">還掛在鏈上,但這次查詢用不到。</span></div>
+            <div class="n1-cverdict">— 已找到答案<br />不必再往回走</div>
+          </div>
+
+          <div class="n1-arrow n1-a1 mono">▶</div>
+          <div class="n1-arrow n1-a2 mono">▶</div>
+          <div class="n1-cursor" data-layout-ignore></div>
+
+          <div class="n1-caption">規則只有一條:<b>從最新版往回找,第一個「已提交、且 ≤ 我的水位 86」的版本就是答案。</b></div>
+          <div class="n1-v40note"><b>為什麼是 80,不是 86?</b> 86 是「門檻」、不是版本 —— 81~86 那些交易改的是<b>別的列</b>,跟這列無關。這列在門檻內最新的已提交版本,就是 80。</div>
+          <div class="n1-bottom mono">v40 還留著,是給比我更早開始的查詢用(長交易撐大 tempdb 的根源,下一幕);判斷比的是 XSN 序號,不是時鐘。</div>
+        </div>
+      </div>
+
+      <!-- ════ VZ 可見性判斷三問 ════ -->
+      <div id="vz" class="scene">
+        <div class="inner">
+          <div class="grid-bg"></div>
+          <div class="glow vz-glow" data-layout-ignore></div>
+          <div class="vz-ghost mono" data-layout-allow-overflow>?</div>
+          <div class="toprule"></div>
+          <div class="corner-tl mono">RCSI DEEP-DIVE · 09 / 可見性</div>
+          <div class="corner-br mono">DB PLATFORM · PROD</div>
+          <div class="vz-kicker mono kicker">VISIBILITY CHECK — 「自己」和「別人」怎麼分?</div>
+          <div class="vz-title serif">引擎怎麼決定「我讀哪一版」</div>
+          <div class="vz-lead">讀一列時,沿版本鏈<b>由新到舊</b>,對每個版本問三題 —— 第一個答「✓」的,就是我讀到的:</div>
+
+          <div class="vz-q vz-q1">
+            <div class="vz-qnum mono">①</div>
+            <div class="vz-qbody">
+              <div class="vz-qmain">這一版是「我自己這個交易」寫的嗎?</div>
+              <div class="vz-qsub"><span class="mono">creator XSN == 我的 XSN?</span> —— 交易不跨連線,引擎隨時知道自己是誰</div>
+            </div>
+            <div class="vz-qout vz-out-go">是 → ✓ 看得到<br />(自己寫的,不管提交沒)</div>
+          </div>
+          <div class="vz-no vz-no1 mono">否 ↓</div>
+
+          <div class="vz-q vz-q2">
+            <div class="vz-qnum mono">②</div>
+            <div class="vz-qbody">
+              <div class="vz-qmain">否則:它「已提交」、且 XSN ≤ 我的水位嗎?</div>
+              <div class="vz-qsub">別人在我這條語句開始前就提交的版本</div>
+            </div>
+            <div class="vz-qout vz-out-go">是 → ✓ 看得到<br />(別人先提交的)</div>
+          </div>
+          <div class="vz-no vz-no2 mono">否 ↓</div>
+
+          <div class="vz-q vz-q3">
+            <div class="vz-qnum mono">③</div>
+            <div class="vz-qbody">
+              <div class="vz-qmain">兩者都不是 → 順 14-byte 指標,走到更舊的版本</div>
+              <div class="vz-qsub">別人「未提交」或「太新(在我之後才提交)」的版本,就這樣被跳過</div>
+            </div>
+            <div class="vz-qout vz-out-loop">↻ 回到 ①</div>
+          </div>
+
+          <div class="vz-foot">所以:<b>自己寫的永遠過 ①、別人已提交的過 ②</b>;別人未提交或太新的,①② 都不過 —— 被跳過,絕不外洩。</div>
+          <div class="vz-bottom mono">這套判斷每次讀取自動執行、對程式完全透明 · 你照常 SELECT,看到的一定是「合法、且屬於我的」版本</div>
+        </div>
+      </div>
+
+      <!-- ════ N2 快照粒度 ════ -->
+      <div id="n2" class="scene">
+        <div class="inner">
+          <div class="grid-bg"></div>
+          <div class="glow n2-glow" data-layout-ignore></div>
+          <div class="toprule"></div>
+          <div class="corner-tl mono">RCSI DEEP-DIVE · 10 / 快照粒度</div>
+          <div class="corner-br mono">DB PLATFORM · PROD</div>
+          <div class="n2-kicker mono kicker">READ-YOUR-OWN-WRITES + 語句級快照</div>
+          <div class="n2-title serif">同一個交易裡,讀得到什麼?</div>
+
+          <div class="n2-panel card n2-pl">
+            <div class="n2-phead serif">① 讀「自己剛寫的」</div>
+            <div class="n2-code mono">
+              <div class="ln n2-la1">BEGIN TRAN</div>
+              <div class="ln n2-la2">&nbsp;&nbsp;UPDATE stock = 70<span class="n2-self">我改,還沒 COMMIT</span></div>
+              <div class="ln n2-la3">&nbsp;&nbsp;SELECT stock → <b class="n2-ok">70</b><span class="n2-self n2-okself">✓ 馬上讀,讀到自己的</span></div>
+              <div class="ln n2-la4">COMMIT</div>
+            </div>
+            <div class="n2-pfoot n2-lf"><b>先寫後讀,永遠讀得到自己的修改</b> —— 這是所有隔離級別的鐵則。RCSI 完全不影響這種寫法。</div>
+          </div>
+          <div class="n2-panel card n2-pr">
+            <div class="n2-phead serif">② 讀「別人剛提交的」</div>
+            <div class="n2-code mono">
+              <div class="ln n2-ra1">BEGIN TRAN</div>
+              <div class="ln n2-ra2">&nbsp;&nbsp;SELECT stock<span class="n2-snapchip mono">快照#1</span>→ 100</div>
+              <div class="ln n2-ra3 n2-interject">&nbsp;&nbsp;┄ 別人進貨 stock 100→130 並 COMMIT ┄</div>
+              <div class="ln n2-ra4">&nbsp;&nbsp;SELECT stock<span class="n2-snapchip mono">快照#2</span>→ <b class="n2-ok">130</b></div>
+              <div class="ln n2-ra5">COMMIT</div>
+            </div>
+            <div class="n2-pfoot n2-rf">RCSI <b>每條語句重拍快照</b> → 第二次讀看得到別人中途的提交。(SNAPSHOT 交易級則整筆凍結、仍讀 100,還可能撞 <span class="n2-err">error 3960</span>。)</div>
+          </div>
+
+          <div class="n2-verdict">RCSI 只改變一件事:<b>別人「未提交」的資料你讀不到(讀到舊值)</b>。自己寫的、別人已提交的 —— 照樣讀得到。</div>
+          <div class="n2-bottom mono">read-your-own-writes 是 SQL 鐵則 · autocommit / ORM 先寫再查回 同樣不受影響 · 解 deadlock 用 RCSI、不需 SNAPSHOT 的 retry</div>
+        </div>
+      </div>
+
+      <!-- ════ N3 長交易與全域水位 ════ -->
+      <div id="n3" class="scene">
+        <div class="inner">
+          <div class="grid-bg"></div>
+          <div class="glow n3-glow" data-layout-ignore></div>
+          <div class="toprule"></div>
+          <div class="corner-tl mono">RCSI DEEP-DIVE · 11 / 長交易</div>
+          <div class="corner-br mono">DB PLATFORM · PROD</div>
+          <div class="n3-kicker mono kicker">VERSION STORE 會自動回收 —— 唯一天敵:長交易</div>
+          <div class="n3-title serif">一筆長交易,全庫陪葬</div>
+
+          <div class="n3-case card n3-k1">
+            <div class="n3-khead">① 深夜 ETL</div>
+            <div class="n3-kline mono">BEGIN TRAN 跑 2 小時<br />兩百萬列才 COMMIT</div>
+          </div>
+          <div class="n3-case card n3-k2">
+            <div class="n3-khead">② 忘了收尾的連線</div>
+            <div class="n3-kline">exception 沒 rollback,<br />open tran 掛在 pool 裡睡覺</div>
+          </div>
+          <div class="n3-case card n3-k3">
+            <div class="n3-khead">③ 人</div>
+            <div class="n3-kline">SSMS 裡 BEGIN TRAN,<br />然後去吃午餐</div>
+          </div>
+
+          <div class="n3-tline"></div>
+          <div class="n3-tick mono n3-t09">09:00</div>
+          <div class="n3-tick mono n3-t10">10:00</div>
+          <div class="n3-tick mono n3-t11">11:00</div>
+          <div class="n3-pin n3-p09"></div>
+          <div class="n3-pin n3-p11"></div>
+          <div class="n3-lab n3-l09">09:00 報表語句開始<br />→ <b style="color:#F2555A">全域水位釘在 XSN 1000</b></div>
+          <div class="n3-lab n3-l11">11:00 報表結束<br />→ <b style="color:#3DD68C">Cleanup 一口氣回收</b></div>
+
+          <div class="n3-wedgezone" data-layout-ignore><div class="n3-wedge"></div></div>
+          <div class="n3-flush" data-layout-ignore></div>
+          <div class="n3-anno">Orders・Payments・Logs —— 全庫所有寫入的舊版本都清不掉,即使報表只讀一張表</div>
+
+          <div class="n3-caption"><b>平常,背景 Cleanup Task 持續回收「沒人需要」的舊版本</b> —— 只保留到「最老還活著的快照(水位)」為止,version store 不會無限長大。</div>
+          <div class="n3-nuance"><b>唯一例外 = 長交易</b>:它卡住水位不前進 → 之後全庫的版本都清不掉(上方演示的就是這個)。語句間發呆的唯讀交易則不釘水位。</div>
+          <div class="n3-bottom mono">sys.dm_tran_active_snapshot_database_transactions · sys.dm_tran_version_store_space_usage · 長交易告警</div>
+        </div>
+      </div>
+
+      <!-- ════ MAP 範式轉移總覽 ════ -->
+      <div id="map" class="scene">
+        <div class="inner">
+          <div class="grid-bg"></div>
+          <div class="glow map-glow" data-layout-ignore></div>
+          <div class="toprule"></div>
+          <div class="corner-tl mono">RCSI DEEP-DIVE · 總覽</div>
+          <div class="corner-br mono">DB PLATFORM · PROD</div>
+          <div class="map-kicker mono kicker">RECAP — RCSI 不是一個開關,是換一套讀取引擎</div>
+          <div class="map-title serif">兩個世界:鎖 vs 版本</div>
+
+          <div class="map-old">
+            <div class="map-colhead serif">預設 READ COMMITTED</div>
+            <div class="map-colsub">靠「鎖」決定誰讀得到</div>
+            <div class="map-oldrow">讀 → 拿 <span class="mono">S 鎖</span></div>
+            <div class="map-oldrow">寫 → 拿 <span class="mono">X 鎖</span></div>
+            <div class="map-oldrow">S ✗ X → 互相等待</div>
+            <div class="map-olddead">→ 死結,選一個犧牲者</div>
+            <div class="map-oldnone">沒有版本、沒有快照、<br />沒有 version store。</div>
+          </div>
+
+          <div class="map-new">
+            <div class="map-colhead serif">RCSI</div>
+            <div class="map-colsub">靠「版本可見性」決定誰讀得到</div>
+            <div class="map-flow">
+              <div class="map-node"><div class="map-nlabel"><b>XSN</b><span class="tag">交易序號 = 時間軸</span></div></div>
+              <div class="map-node"><span class="map-arrow">↓</span><div class="map-nlabel"><b>Statement Snapshot</b><span class="tag">每條語句重拍一張</span></div></div>
+              <div class="map-node"><span class="map-arrow">↓</span><div class="map-nlabel"><b>Visibility Rule</b><span class="tag">可見性大腦 —— 真正決定結果的</span></div></div>
+              <div class="map-branch">
+                <div class="map-bcard"><b>Read Your Own Writes</b><br />自己寫的,永遠先看到</div>
+                <div class="map-bcard"><b>Version Chain</b><br />沿鏈由新往舊找</div>
+              </div>
+              <div class="map-storeline">
+                <span class="pill mono">Current Row</span>
+                <span class="pillp mono">←14-byte 指標→</span>
+                <span class="pill mono">Version Store(tempdb)</span>
+                <span class="map-arrow">→</span>
+                <span class="pill mono">Cleanup 自動回收</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="map-core">核心其實只有兩件事:<b>① 每個 statement 在哪個 snapshot(XSN) 上讀 ② 某個版本對這個 snapshot 是否可見</b>。版本鏈、指標、store、cleanup 都是為這兩件事服務 —— 而這一整套,預設模式完全沒有。</div>
+          <div class="map-bottom mono">PART 1:為什麼開、開了什麼(01–05) · PART 2:它怎麼運作(06–11) · 這頁把兩個世界並排,看清楚 RCSI 換掉的是什麼</div>
+        </div>
+      </div>
+
+      <!-- ════ S6 效益與證據 ════ -->
+      <div id="s6" class="scene">
+        <div class="inner">
+          <div class="grid-bg"></div>
+          <div class="glow s6-glow" data-layout-ignore></div>
+          <div class="s6-ghost serif" data-layout-allow-overflow>✓</div>
+          <div class="toprule"></div>
+          <div class="corner-tl mono">RCSI DEEP-DIVE · 12 / 效益</div>
+          <div class="corner-br mono">DB PLATFORM · PROD</div>
+          <div class="s6-kicker mono kicker">"READERS DON'T BLOCK WRITERS. WRITERS DON'T BLOCK READERS."</div>
+          <div class="s6-title serif">開啟之後,我們得到什麼</div>
+
+          <div class="s6-card card s6-c1">
+            <div class="s6-chead serif"><svg class="s6-tick" viewBox="0 0 40 40"><path pathLength="1" d="M 8 21 L 17 30 L 33 11"/></svg>讀不擋寫,寫不擋讀</div>
+            <div class="s6-cline">報表、查詢、批次刪檔,同桌共存 —— 鎖等待從根本消失。</div>
+          </div>
+          <div class="s6-card card s6-c2">
+            <div class="s6-chead serif"><svg class="s6-tick" viewBox="0 0 40 40"><path pathLength="1" d="M 8 21 L 17 30 L 33 11"/></svg>讀寫死結,直接絕種</div>
+            <div class="s6-cline">SELECT 退出等待,環就接不起來 —— 是<b style="color:#3DD68C">結構性消失</b>,不是機率變低。</div>
+          </div>
+          <div class="s6-card card s6-c3">
+            <div class="s6-chead serif"><svg class="s6-tick" viewBox="0 0 40 40"><path pathLength="1" d="M 8 21 L 17 30 L 33 11"/></svg>0 行程式碼修改</div>
+            <div class="s6-cline">資料庫層一次切換,所有應用程式立即受益 —— 不用排開發人力。</div>
+          </div>
+          <div class="s6-card card s6-c4">
+            <div class="s6-chead serif"><svg class="s6-tick" viewBox="0 0 40 40"><path pathLength="1" d="M 8 21 L 17 30 L 33 11"/></svg>把 NOLOCK 送進歷史</div>
+            <div class="s6-cline"><b>NOLOCK = 髒讀、跳列、重複讀</b>;RCSI 只讀已提交資料,快又正確。</div>
+          </div>
+
+          <div class="s6-azure">
+            <div class="big serif">Azure SQL Database 出廠預設<div class="bigmono mono">READ_COMMITTED_SNAPSHOT = ON</div></div>
+            <div class="cite">微軟自家雲端數百萬個資料庫、與 Microsoft Fabric 的預設值 —— 我們只是調成微軟眼中「現代的預設」。<br /><span class="mono">— Microsoft Learn · SET TRANSACTION ISOLATION LEVEL</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ S7 風險 ════ -->
+      <div id="s7" class="scene">
+        <div class="inner">
+          <div class="grid-bg"></div>
+          <div class="glow s7-glow" data-layout-ignore></div>
+          <div class="s7-ghost serif" data-layout-allow-overflow>!</div>
+          <div class="toprule"></div>
+          <div class="corner-tl mono">RCSI DEEP-DIVE · 13 / 代價</div>
+          <div class="corner-br mono">DB PLATFORM · PROD</div>
+          <div class="s7-kicker mono kicker">TRADE-OFFS — 天下沒有免費的午餐</div>
+          <div class="s7-title serif">代價,說清楚</div>
+
+          <div class="s7-row s7-r1">
+            <div class="s7-cost">
+              <div class="s7-costhead">① tempdb 變重</div>
+              <div class="s7-costline">版本存放區吃 tempdb 空間;<br />長交易釘住全域水位,全庫版本陪葬(見 08)。</div>
+            </div>
+            <div class="s7-arrow mono">→ 對策</div>
+            <div class="s7-fix">
+              <div class="s7-fixhead">監控 + 揪出長交易</div>
+              <div class="s7-fixline mono">sys.dm_tran_version_store_space_usage<br />告警長交易;SQL 2019+ 可用 ADR 分流</div>
+            </div>
+          </div>
+          <div class="s7-row s7-r2">
+            <div class="s7-cost">
+              <div class="s7-costhead">② 每列 +14 bytes</div>
+              <div class="s7-costline">列上多掛一個版本指標,<br />寫入成本略增。</div>
+            </div>
+            <div class="s7-arrow mono">→ 對策</div>
+            <div class="s7-fix">
+              <div class="s7-fixhead">壓測驗證</div>
+              <div class="s7-fixline">多數 OLTP 工作負載無感;<br />上線前用 staging 實測確認。</div>
+            </div>
+          </div>
+          <div class="s7-row s7-r3">
+            <div class="s7-cost">
+              <div class="s7-costhead">③ 語意改變</div>
+              <div class="s7-costline">SELECT 不再「等寫完才讀」——<br />讀到的是語句開始時的快照。</div>
+            </div>
+            <div class="s7-arrow mono">→ 對策</div>
+            <div class="s7-fix">
+              <div class="s7-fixhead">盤點「先查再改」邏輯</div>
+              <div class="s7-fixline">依賴鎖等待的程式碼,<br />逐一加 <span class="mono">UPDLOCK</span> 明示意圖。</div>
+            </div>
+          </div>
+          <div class="s7-bottom mono">誠實評估:風險全部可監控、可演練、可回退(SET READ_COMMITTED_SNAPSHOT OFF)。</div>
+        </div>
+      </div>
+
+      <!-- ════ S8 行動方案 + 金句 ════ -->
+      <div id="s8" class="scene">
+        <div class="inner">
+          <div class="grid-bg"></div>
+          <div class="glow s8-glow" data-layout-ignore></div>
+          <div class="toprule"></div>
+          <div class="corner-tl mono">RCSI DEEP-DIVE · 14 / 行動</div>
+          <div class="corner-br mono">DB PLATFORM · PROD</div>
+          <div class="s8-planewrap">
+            <div class="s8-kicker mono kicker">ROLLOUT PLAN — 不是賭,是工程</div>
+            <div class="s8-title serif">上線三步,風險可控</div>
+            <div class="s8-line"></div>
+            <div class="s8-dot s8-d1 mono">1</div>
+            <div class="s8-dot s8-d2 mono">2</div>
+            <div class="s8-dot s8-d3 mono">3</div>
+            <div class="s8-steptext s8-t1">
+              <div class="s8-sthead serif">Staging 先開</div>
+              <div class="s8-stline">完整壓測,觀察 tempdb<br />與版本存放區水位</div>
+              <div class="s8-stmono mono">baseline → 對照</div>
+            </div>
+            <div class="s8-steptext s8-t2">
+              <div class="s8-sthead serif">盤點程式碼</div>
+              <div class="s8-stline">找出依賴「讀會等寫」的邏輯<br />必要處加 UPDLOCK</div>
+              <div class="s8-stmono mono">audit → 修補</div>
+            </div>
+            <div class="s8-steptext s8-t3">
+              <div class="s8-sthead serif">離峰切換</div>
+              <div class="s8-stline">維護窗口執行 ALTER<br />監控一週,隨時可回退</div>
+              <div class="s8-stmono mono">cutover → 觀察</div>
+            </div>
+          </div>
+          <div class="s8-quotewrap">
+            <div class="s8-q1 serif">與其讓資料庫每天選一個犧牲者,</div>
+            <div class="s8-q2 serif">不如讓<span class="em">讀</span>與<span class="em">寫</span>,各走各的路。</div>
+            <div class="s8-mark mono">ALTER DATABASE … SET READ_COMMITTED_SNAPSHOT ON</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      /* ════════════ S1 深夜告警(0 – 12)════════════ */
+      tl.fromTo(".s1-host", { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 0.15);
+      tl.fromTo(".s1-ts", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "steps(8)" }, 0.3);
+      tl.to(".s1-glow", { scale: 1.07, duration: 1.4, yoyo: true, repeat: 8, ease: "sine.inOut" }, 0);
+      tl.to(".s1-ghostlock", { y: 26, duration: 6, yoyo: true, repeat: 1, ease: "sine.inOut" }, 0);
+      tl.fromTo(".s1-term", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.6);
+      tl.fromTo(".s1-l1", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "steps(36)" }, 1.4);
+      tl.fromTo(".s1-l2", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.9, ease: "steps(50)" }, 2.2);
+      tl.fromTo(".s1-l3", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.9, ease: "steps(51)" }, 3.2);
+      tl.fromTo(".s1-l4", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.9, ease: "steps(46)" }, 4.1);
+      tl.to(".s1-victim", { backgroundColor: "#7F1D24", color: "#FFD9DB", duration: 0.25, ease: "power2.out" }, 5.2);
+      tl.fromTo(".s1-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "expo.out" }, 5.8);
+      tl.fromTo(".s1-head", { opacity: 0, scale: 1.18 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, 6.0);
+      tl.fromTo(".s1-sub", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "sine.out" }, 6.9);
+      tl.fromTo(".s1-chips .chip", { opacity: 0, y: 18, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(1.6)", stagger: 0.14 }, 8.2);
+
+      /* ── T1: blur-through(11.7)── */
+      tl.to("#s1", { filter: "blur(15px)", scale: 1.05, opacity: 0, duration: 0.4, ease: "power2.in" }, 11.7);
+      tl.fromTo("#s2", { filter: "blur(15px)", scale: 0.95, opacity: 0 }, { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.4, ease: "power2.out" }, 11.9);
+      tl.set("#s1", { visibility: "hidden" }, 12.4);
+
+      /* ════════════ S2 預設世界的鎖(12.3 – 27.7)════════════ */
+      tl.to(".s2-glow", { scale: 1.06, duration: 1.8, yoyo: true, repeat: 8, ease: "sine.inOut" }, 12.3);
+      tl.to(".s2-ghost", { x: -36, duration: 8, yoyo: true, repeat: 1, ease: "sine.inOut" }, 12.3);
+      tl.fromTo(".s2-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 12.45);
+      tl.fromTo(".s2-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 12.6);
+      tl.fromTo(".s2-table", { opacity: 0, scaleX: 0, transformOrigin: "left center" }, { opacity: 1, scaleX: 1, duration: 0.6, ease: "power3.out" }, 13.0);
+      tl.fromTo(".s2-capsel", { opacity: 0, x: -120 }, { opacity: 1, x: 0, duration: 0.55, ease: "expo.out" }, 13.6);
+      tl.fromTo(".s2-capdel", { opacity: 0, x: 120 }, { opacity: 1, x: 0, duration: 0.55, ease: "power4.out" }, 13.9);
+      tl.fromTo(".s2-locks", { opacity: 0, y: -150 }, { opacity: 1, y: 0, duration: 0.6, ease: "back.out(1.5)" }, 14.6);
+      tl.fromTo(".s2-locklabel.ls", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "sine.out" }, 14.9);
+      tl.fromTo(".s2-lockx", { opacity: 0, y: -150 }, { opacity: 1, y: 0, duration: 0.6, ease: "back.out(1.5)" }, 15.3);
+      tl.fromTo(".s2-locklabel.lx", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "sine.out" }, 15.6);
+      tl.fromTo(".s2-caption", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 16.4);
+      tl.fromTo(".s2-matrix", { opacity: 0, y: 50, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: "power3.out" }, 17.6);
+      tl.fromTo(".s2-mrow", { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out", stagger: 0.22 }, 18.1);
+      tl.fromTo(".s2-mno", { scale: 1.9 }, { scale: 1, duration: 0.4, ease: "back.out(2)", stagger: 0.22 }, 18.5);
+      tl.fromTo(".s2-wait", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "sine.out" }, 20.4);
+      tl.to(".s2-wait", { opacity: 0.25, duration: 0.5, yoyo: true, repeat: 9, ease: "sine.inOut" }, 20.8);
+      tl.fromTo(".s2-caption2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "sine.out" }, 21.8);
+
+      /* ── T2: push slide(S2 → S3,27.7)── */
+      tl.to("#s2", { x: -1920, duration: 0.5, ease: "power3.inOut" }, 27.7);
+      tl.fromTo("#s3", { x: 1920, opacity: 1 }, { x: 0, duration: 0.5, ease: "power3.inOut", immediateRender: false }, 27.7);
+      tl.set("#s2", { visibility: "hidden" }, 28.3);
+
+      /* ════════════ S3 死結成環(28.2 – 46)════════════ */
+      tl.to(".s3-glow", { scale: 1.09, duration: 0.85, yoyo: true, repeat: 20, ease: "sine.inOut" }, 28.3);
+      tl.fromTo(".s3-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 28.45);
+      tl.fromTo(".s3-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 28.6);
+      tl.fromTo(".s3-rnc", { opacity: 0, y: -34 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 29.0);
+      tl.fromTo(".s3-rcl", { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 29.2);
+      tl.fromTo(".s3-psel", { opacity: 0, x: -64 }, { opacity: 1, x: 0, duration: 0.55, ease: "expo.out" }, 29.45);
+      tl.fromTo(".s3-pdel", { opacity: 0, x: 64 }, { opacity: 1, x: 0, duration: 0.55, ease: "back.out(1.3)" }, 29.65);
+      tl.fromTo("#s3s1", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 30.4);
+      tl.to("#s3e1", { strokeDashoffset: 0, duration: 0.7, ease: "power2.inOut" }, 30.5);
+      tl.fromTo("#s3l1", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "sine.out" }, 31.0);
+      tl.fromTo("#s3s2", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 31.9);
+      tl.to("#s3e2", { strokeDashoffset: 0, duration: 0.7, ease: "power2.inOut" }, 32.0);
+      tl.fromTo("#s3l2", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "sine.out" }, 32.5);
+      tl.fromTo("#s3s3", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 33.4);
+      tl.to("#s3e3", { strokeDashoffset: 0, duration: 0.8, ease: "power1.inOut" }, 33.5);
+      tl.fromTo("#s3l3", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "sine.out" }, 34.1);
+      tl.fromTo("#s3s4", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 35.0);
+      tl.to("#s3e4", { strokeDashoffset: 0, duration: 0.8, ease: "power1.inOut" }, 35.1);
+      tl.fromTo("#s3l4", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "sine.out" }, 35.7);
+      tl.fromTo(".s3-cycle", { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2.2)" }, 36.1);
+      tl.to(".s3-flash", { opacity: 1, duration: 0.1, yoyo: true, repeat: 3, ease: "steps(1)" }, 36.2);
+      tl.fromTo(".s3-svg", { x: 0 }, { x: 7, duration: 0.06, yoyo: true, repeat: 5, ease: "sine.inOut" }, 36.25);
+      tl.fromTo(".s3-scan", { x: 0, opacity: 0 }, { opacity: 1, duration: 0.2, ease: "sine.out" }, 37.3);
+      tl.to(".s3-scan", { x: 1400, duration: 1.1, ease: "power1.inOut" }, 37.5);
+      tl.to(".s3-scan", { opacity: 0, duration: 0.25, ease: "sine.in" }, 38.6);
+      tl.fromTo(".s3-bottom", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "sine.out" }, 37.8);
+      /* 宣判瞬間:整個案發現場退到背景,讓判決獨佔畫面 */
+      tl.to(".s3-psel", { opacity: 0.22, duration: 0.4, ease: "power2.in" }, 38.9);
+      tl.to(".s3-pdel", { opacity: 0.3, duration: 0.4, ease: "power2.in" }, 38.9);
+      tl.to(".s3-rnc, .s3-rcl", { opacity: 0.26, duration: 0.4, ease: "power2.in" }, 38.9);
+      tl.to("#s3e1, #s3e2, #s3e3, #s3e4", { opacity: 0.15, duration: 0.4 }, 38.9);
+      tl.to("#s3l1, #s3l2, #s3l3, #s3l4", { opacity: 0.12, duration: 0.4 }, 38.9);
+      tl.to(".s3-cycle", { opacity: 0.08, duration: 0.4 }, 38.9);
+      tl.fromTo(".s3-x", { opacity: 0, scale: 2.4 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.8)" }, 39.0);
+      tl.fromTo(".s3-victim", { opacity: 0, scale: 1.35 }, { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out" }, 39.6);
+      tl.fromTo(".s3-victimsub", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 40.4);
+      tl.fromTo(".s3-closing", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.8, ease: "sine.out" }, 42.2);
+
+      /* ── T3: hard cut(46)── */
+      tl.set("#s3", { opacity: 0, visibility: "hidden" }, 46.0);
+      tl.set("#s4", { opacity: 1 }, 46.0);
+
+      /* ════════════ S4 一行指令(46 – 57.7)════════════ */
+      tl.to(".s4-glow", { opacity: 0.6, duration: 1.8, ease: "sine.inOut" }, 46.2);
+      tl.to(".s4-glow", { scale: 1.05, duration: 2.0, yoyo: true, repeat: 4, ease: "sine.inOut" }, 46.2);
+      tl.fromTo(".s4-term", { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.7, ease: "sine.out" }, 46.9);
+      tl.fromTo(".s4-sql1", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.8, ease: "steps(27)" }, 47.4);
+      tl.fromTo(".s4-sql2", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.9, ease: "steps(32)" }, 48.4);
+      tl.fromTo(".s4-sql3", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "steps(26)" }, 49.5);
+      tl.to(".s4-cursor", { opacity: 0, duration: 0.38, yoyo: true, repeat: 7, ease: "steps(1)" }, 50.2);
+      tl.fromTo(".s4-done", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "sine.out" }, 51.0);
+      tl.to(".s4-termbody", { boxShadow: "0 0 60px rgba(61,214,140,0.35)", duration: 0.35, yoyo: true, repeat: 1, ease: "sine.inOut" }, 51.1);
+      tl.fromTo(".s4-head", { opacity: 0, y: 70 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 52.0);
+      tl.fromTo(".s4-notes .chip", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.5)", stagger: 0.16 }, 53.4);
+      tl.fromTo(".s4-tail", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "sine.out" }, 55.0);
+
+      /* ── T4: blur crossfade(57.7)── */
+      tl.to("#s4", { filter: "blur(10px)", scale: 1.03, opacity: 0, duration: 0.5, ease: "power2.inOut" }, 57.7);
+      tl.fromTo("#s5", { filter: "blur(10px)", scale: 0.97, opacity: 0 }, { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, 57.8);
+      tl.set("#s4", { visibility: "hidden" }, 58.5);
+
+      /* ════════════ S5 版本快照雙軌(58.3 – 75.7)════════════ */
+      tl.to(".s5-glow", { scale: 1.06, duration: 1.9, yoyo: true, repeat: 8, ease: "sine.inOut" }, 58.3);
+      tl.to(".s5-rails", { x: -60, duration: 8.6, yoyo: true, repeat: 1, ease: "sine.inOut" }, 58.3);
+      tl.fromTo(".s5-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 58.45);
+      tl.fromTo(".s5-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 58.6);
+      tl.fromTo(".s5-table", { opacity: 0, x: -50 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, 59.1);
+      tl.fromTo(".s5-delcap", { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 0.55, ease: "back.out(1.4)" }, 59.8);
+      tl.to("#s5pdel", { strokeDashoffset: 0, duration: 0.45, ease: "power2.inOut" }, 60.4);
+      tl.fromTo(".s5-plabel.del", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "sine.out" }, 60.7);
+      tl.fromTo(".s5-store", { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: 0.6, ease: "expo.out" }, 61.4);
+      tl.fromTo(".s5-ver:not(.s5-verold)", { opacity: 0, x: -480, scale: 0.82 }, { opacity: 1, x: 0, scale: 1, duration: 0.8, ease: "power2.inOut" }, 62.2);
+      tl.fromTo(".s5-verold", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "sine.out" }, 62.9);
+      tl.to("#s5pptr", { strokeDashoffset: 0, duration: 0.6, ease: "power1.inOut" }, 63.2);
+      tl.fromTo(".s5-plabel.ptr", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "sine.out" }, 63.7);
+      tl.fromTo(".s5-selcap", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.6, ease: "power4.out" }, 64.6);
+      tl.to("#s5psel", { strokeDashoffset: 0, duration: 1.0, ease: "power1.inOut" }, 65.2);
+      tl.fromTo(".s5-plabel.sel", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "sine.out" }, 65.9);
+      tl.to("#s5psel", { opacity: 0.45, duration: 0.55, yoyo: true, repeat: 5, ease: "sine.inOut" }, 66.6);
+      tl.to("#s5pdel", { opacity: 0.45, duration: 0.55, yoyo: true, repeat: 5, ease: "sine.inOut" }, 66.88);
+      tl.fromTo(".s5-caption", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 68.0);
+      tl.fromTo(".s5-foot", { opacity: 0 }, { opacity: 1, duration: 0.7, ease: "sine.out" }, 70.6);
+
+      /* ── T: blur-through(S5 → DV 章節過場,75.7)── */
+      tl.to("#s5", { filter: "blur(16px)", scale: 1.06, opacity: 0, duration: 0.5, ease: "power2.in" }, 75.7);
+      tl.fromTo("#dv", { filter: "blur(16px)", scale: 0.94, opacity: 0 }, { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.55, ease: "power2.out" }, 75.85);
+      tl.set("#s5", { visibility: "hidden" }, 76.4);
+
+      /* ════════════ DV 章節過場 PART 2(76.2 – 83.7)════════════ */
+      tl.to(".dv-glow", { scale: 1.08, duration: 2.2, yoyo: true, repeat: 2, ease: "sine.inOut" }, 76.4);
+      tl.fromTo(".dv-part", { opacity: 0, letterSpacing: "0.2em" }, { opacity: 1, letterSpacing: "0.5em", duration: 0.7, ease: "power2.out" }, 76.5);
+      tl.fromTo(".dv-title", { opacity: 0, y: 44 }, { opacity: 1, y: 0, duration: 0.8, ease: "expo.out" }, 77.0);
+      tl.fromTo(".dv-sub", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, 78.0);
+      tl.fromTo(".dv-hint", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "sine.out" }, 79.2);
+      tl.to(".dv-hint", { y: 10, duration: 1.0, yoyo: true, repeat: 3, ease: "sine.inOut" }, 79.9);
+
+      /* ── T(DV → LK push slide,83.7)── */
+      tl.to("#dv", { x: -1920, duration: 0.5, ease: "power3.inOut" }, 83.7);
+      tl.fromTo("#lk", { x: 1920, opacity: 1 }, { x: 0, duration: 0.5, ease: "power3.inOut", immediateRender: false }, 83.7);
+      tl.set("#dv", { visibility: "hidden" }, 84.3);
+
+      /* ════════════ LK 鎖的種類(84.2 – 99.7)════════════ */
+      tl.to(".lk-glow", { scale: 1.05, duration: 2.0, yoyo: true, repeat: 7, ease: "sine.inOut" }, 84.3);
+      tl.to(".lk-ghost", { y: -22, duration: 7.6, yoyo: true, repeat: 1, ease: "sine.inOut" }, 84.3);
+      tl.fromTo(".lk-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 84.45);
+      tl.fromTo(".lk-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 84.6);
+      tl.fromTo(".lk-head", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "sine.out" }, 85.3);
+      tl.fromTo(".lk-row", { opacity: 0, x: -50 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out", stagger: 0.34 }, 85.6);
+      tl.to(".lk-row.hot", { boxShadow: "0 0 40px rgba(61,214,140,0.35)", duration: 0.6, yoyo: true, repeat: 3, ease: "sine.inOut" }, 88.4);
+      tl.fromTo(".lk-foot", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, 91.8);
+
+      /* ── T5b: push slide(LK → XN,99.7)── */
+      tl.to("#lk", { x: -1920, duration: 0.5, ease: "power3.inOut" }, 99.7);
+      tl.fromTo("#xn", { x: 1920, opacity: 1 }, { x: 0, duration: 0.5, ease: "power3.inOut", immediateRender: false }, 99.7);
+      tl.set("#lk", { visibility: "hidden" }, 100.3);
+
+      /* ════════════ XN XSN 定義與舉例(100.2 – 115.7)════════════ */
+      tl.to(".xn-glow", { scale: 1.05, duration: 2.0, yoyo: true, repeat: 7, ease: "sine.inOut" }, 100.3);
+      tl.to(".xn-ghost", { y: -22, duration: 7.6, yoyo: true, repeat: 1, ease: "sine.inOut" }, 100.3);
+      tl.fromTo(".xn-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 100.45);
+      tl.fromTo(".xn-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 100.6);
+      tl.fromTo(".xn-def", { opacity: 0, y: -24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 101.2);
+      tl.fromTo(".xn-axis-label", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "sine.out" }, 102.4);
+      tl.fromTo(".xn-line", { scaleX: 0, transformOrigin: "left center" }, { scaleX: 1, duration: 0.9, ease: "power2.inOut" }, 102.8);
+      tl.fromTo(".xn-node", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.5)", stagger: 0.5 }, 103.2);
+      tl.to(".xn-node.xn-caution .xn-dot", { boxShadow: "0 0 26px rgba(240,180,41,0.75)", duration: 0.6, yoyo: true, repeat: 3, ease: "sine.inOut" }, 106.2);
+      tl.fromTo(".xn-foot", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, 108.4);
+
+      /* ── T6: blur crossfade(XN → N1,115.7)── */
+      tl.to("#xn", { filter: "blur(10px)", scale: 1.03, opacity: 0, duration: 0.5, ease: "power2.inOut" }, 115.7);
+      tl.fromTo("#n1", { filter: "blur(10px)", scale: 0.97, opacity: 0 }, { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, 115.8);
+      tl.set("#xn", { visibility: "hidden" }, 116.5);
+
+      /* ════════════ N1 版本鏈與可見性(116.2 – 141.7)════════════ */
+      tl.to(".n1-glow", { scale: 1.05, duration: 1.9, yoyo: true, repeat: 12, ease: "sine.inOut" }, 116.2);
+      tl.to(".n1-ghost", { x: -40, duration: 12, yoyo: true, repeat: 1, ease: "sine.inOut" }, 116.2);
+      tl.fromTo(".n1-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 116.35);
+      tl.fromTo(".n1-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 116.5);
+      tl.fromTo(".n1-snap", { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 117.1);
+      tl.fromTo(".n1-flow", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "sine.out" }, 117.9);
+      tl.fromTo(".n1-ca", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.55, ease: "expo.out" }, 118.4);
+      tl.fromTo(".n1-a1", { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.4, ease: "back.out(2)" }, 119.0);
+      tl.fromTo(".n1-cb", { opacity: 0, y: 44 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 119.3);
+      tl.fromTo(".n1-a2", { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.4, ease: "back.out(2)" }, 119.9);
+      tl.fromTo(".n1-cc", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "sine.out" }, 120.2);
+      tl.fromTo(".n1-cursor", { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(2)" }, 121.4);
+      tl.to(".n1-ca", { boxShadow: "0 0 32px rgba(229,72,77,0.35)", duration: 0.5, yoyo: true, repeat: 1, ease: "sine.inOut" }, 122.0);
+      tl.to(".n1-cursor", { x: 710, duration: 0.95, ease: "power2.inOut" }, 123.4);
+      tl.to(".n1-cb", { boxShadow: "0 0 46px rgba(61,214,140,0.5)", duration: 0.5, yoyo: true, repeat: 3, ease: "sine.inOut" }, 124.6);
+      tl.fromTo(".n1-caption", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 126.6);
+      tl.fromTo(".n1-v40note", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "sine.out" }, 129.2);
+      tl.fromTo(".n1-bottom", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "sine.out" }, 131.6);
+
+      /* ── T7: blur crossfade(N1 → VZ,141.7)── */
+      tl.to("#n1", { filter: "blur(10px)", scale: 1.03, opacity: 0, duration: 0.5, ease: "power2.inOut" }, 141.7);
+      tl.fromTo("#vz", { filter: "blur(10px)", scale: 0.97, opacity: 0 }, { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, 141.8);
+      tl.set("#n1", { visibility: "hidden" }, 142.5);
+
+      /* ════════════ VZ 可見性判斷三問(142.2 – 157.7)════════════ */
+      tl.to(".vz-glow", { scale: 1.05, duration: 2.0, yoyo: true, repeat: 7, ease: "sine.inOut" }, 142.3);
+      tl.to(".vz-ghost", { y: -20, duration: 7.6, yoyo: true, repeat: 1, ease: "sine.inOut" }, 142.3);
+      tl.fromTo(".vz-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 142.45);
+      tl.fromTo(".vz-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 142.6);
+      tl.fromTo(".vz-lead", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "sine.out" }, 143.3);
+      tl.fromTo(".vz-q1", { opacity: 0, x: -50 }, { opacity: 1, x: 0, duration: 0.55, ease: "expo.out" }, 143.9);
+      tl.fromTo(".vz-no1", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "sine.out" }, 144.7);
+      tl.fromTo(".vz-q2", { opacity: 0, x: -50 }, { opacity: 1, x: 0, duration: 0.55, ease: "power3.out" }, 145.0);
+      tl.fromTo(".vz-no2", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "sine.out" }, 145.8);
+      tl.fromTo(".vz-q3", { opacity: 0, x: -50 }, { opacity: 1, x: 0, duration: 0.55, ease: "power2.out" }, 146.1);
+      tl.to(".vz-q1", { boxShadow: "0 0 40px rgba(61,214,140,0.35)", duration: 0.6, yoyo: true, repeat: 3, ease: "sine.inOut" }, 147.4);
+      tl.fromTo(".vz-foot", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, 149.0);
+      tl.fromTo(".vz-bottom", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "sine.out" }, 151.0);
+
+      /* ── T7b: blur crossfade(VZ → N2,157.7)── */
+      tl.to("#vz", { filter: "blur(10px)", scale: 1.03, opacity: 0, duration: 0.5, ease: "power2.inOut" }, 157.7);
+      tl.fromTo("#n2", { filter: "blur(10px)", scale: 0.97, opacity: 0 }, { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, 157.8);
+      tl.set("#vz", { visibility: "hidden" }, 158.5);
+
+      /* ════════════ N2 快照粒度(158.3 – 179.7)════════════ */
+      tl.to(".n2-glow", { scale: 1.05, duration: 2.0, yoyo: true, repeat: 9, ease: "sine.inOut" }, 158.3);
+      tl.fromTo(".n2-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 158.45);
+      tl.fromTo(".n2-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 158.6);
+      tl.fromTo(".n2-pl", { opacity: 0, x: -70 }, { opacity: 1, x: 0, duration: 0.6, ease: "expo.out" }, 159.2);
+      tl.fromTo(".n2-pr", { opacity: 0, x: 70 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, 159.5);
+      tl.fromTo(".n2-la1", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.4, ease: "steps(10)" }, 160.2);
+      tl.fromTo(".n2-la2", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "steps(22)" }, 160.8);
+      tl.fromTo(".n2-la3", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.6)" }, 161.6);
+      tl.fromTo(".n2-la4", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.3, ease: "steps(6)" }, 162.4);
+      tl.fromTo(".n2-ra1", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.4, ease: "steps(10)" }, 160.6);
+      tl.fromTo(".n2-ra2", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "steps(22)" }, 161.2);
+      tl.fromTo(".n2-ra3", { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "sine.out" }, 162.0);
+      tl.fromTo(".n2-ra4", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.6)" }, 162.8);
+      tl.fromTo(".n2-ra5", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.3, ease: "steps(6)" }, 163.6);
+      tl.fromTo(".n2-lf", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "sine.out" }, 164.6);
+      tl.fromTo(".n2-rf", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "sine.out" }, 165.4);
+      tl.fromTo(".n2-verdict", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.65, ease: "back.out(1.2)" }, 167.2);
+      tl.fromTo(".n2-bottom", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "sine.out" }, 169.2);
+
+      /* ── T8: blur-through(179.7)── */
+      tl.to("#n2", { filter: "blur(15px)", scale: 1.05, opacity: 0, duration: 0.4, ease: "power2.in" }, 179.7);
+      tl.fromTo("#n3", { filter: "blur(15px)", scale: 0.95, opacity: 0 }, { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.4, ease: "power2.out" }, 179.9);
+      tl.set("#n2", { visibility: "hidden" }, 180.4);
+
+      /* ════════════ N3 長交易與全域水位(180.3 – 205.7)════════════ */
+      tl.to(".n3-glow", { scale: 1.05, duration: 2.1, yoyo: true, repeat: 11, ease: "sine.inOut" }, 180.3);
+      tl.fromTo(".n3-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 180.45);
+      tl.fromTo(".n3-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 180.6);
+      tl.fromTo(".n3-k1", { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 181.3);
+      tl.fromTo(".n3-k2", { opacity: 0, x: -50 }, { opacity: 1, x: 0, duration: 0.5, ease: "expo.out" }, 181.6);
+      tl.fromTo(".n3-k3", { opacity: 0, x: 50 }, { opacity: 1, x: 0, duration: 0.5, ease: "back.out(1.3)" }, 181.9);
+      tl.fromTo(".n3-tline", { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "power2.inOut" }, 183.0);
+      tl.fromTo(".n3-tick", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "sine.out", stagger: 0.12 }, 183.5);
+      tl.fromTo(".n3-p09", { opacity: 0, y: -44 }, { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.8)" }, 184.0);
+      tl.fromTo(".n3-l09", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "sine.out" }, 184.3);
+      tl.fromTo(".n3-wedge", { scaleX: 0 }, { scaleX: 1, duration: 5.5, ease: "none" }, 184.9);
+      tl.fromTo(".n3-anno", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "sine.out" }, 187.2);
+      tl.fromTo(".n3-p11", { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, 191.0);
+      tl.fromTo(".n3-l11", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "sine.out" }, 191.3);
+      tl.to(".n3-wedge", { opacity: 0.16, duration: 0.5, ease: "power4.out" }, 192.2);
+      tl.to(".n3-anno", { opacity: 0.3, duration: 0.5, ease: "power2.in" }, 192.2);
+      tl.fromTo(".n3-flush", { scaleX: 0 }, { scaleX: 1, duration: 0.55, ease: "expo.out" }, 192.4);
+      tl.fromTo(".n3-caption", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 193.6);
+      tl.fromTo(".n3-nuance", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "sine.out" }, 195.8);
+      tl.fromTo(".n3-bottom", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "sine.out" }, 197.8);
+
+      /* ── T9: push slide(N3 → MAP,205.7)── */
+      tl.to("#n3", { x: -1920, duration: 0.5, ease: "power3.inOut" }, 205.7);
+      tl.fromTo("#map", { x: 1920, opacity: 1 }, { x: 0, duration: 0.5, ease: "power3.inOut", immediateRender: false }, 205.7);
+      tl.set("#n3", { visibility: "hidden" }, 206.3);
+
+      /* ════════════ MAP 範式轉移總覽(206.2 – 224.7)════════════ */
+      tl.to(".map-glow", { scale: 1.05, duration: 2.0, yoyo: true, repeat: 8, ease: "sine.inOut" }, 206.3);
+      tl.fromTo(".map-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 206.45);
+      tl.fromTo(".map-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 206.6);
+      tl.fromTo(".map-old", { opacity: 0, x: -50 }, { opacity: 1, x: 0, duration: 0.6, ease: "expo.out" }, 207.3);
+      tl.fromTo(".map-oldrow", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.4, ease: "power2.out", stagger: 0.25 }, 207.9);
+      tl.fromTo(".map-olddead", { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.8)" }, 209.0);
+      tl.fromTo(".map-oldnone", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "sine.out" }, 209.8);
+      tl.fromTo(".map-new", { opacity: 0, x: 50 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, 210.6);
+      tl.fromTo(".map-node", { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out", stagger: 0.4 }, 211.4);
+      tl.fromTo(".map-branch", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.4)" }, 213.0);
+      tl.fromTo(".map-storeline", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 213.8);
+      tl.fromTo(".map-core", { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }, 215.4);
+      tl.fromTo(".map-bottom", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "sine.out" }, 217.4);
+
+      /* ── T9b: push slide(MAP → S6,224.7)── */
+      tl.to("#map", { x: -1920, duration: 0.5, ease: "power3.inOut" }, 224.7);
+      tl.fromTo("#s6", { x: 1920, opacity: 1 }, { x: 0, duration: 0.5, ease: "power3.inOut", immediateRender: false }, 224.7);
+      tl.set("#map", { visibility: "hidden" }, 225.3);
+
+      /* ════════════ S6 效益與證據(225.2 – 238.7)════════════ */
+      tl.to(".s6-glow", { scale: 1.05, duration: 1.7, yoyo: true, repeat: 7, ease: "sine.inOut" }, 225.2);
+      tl.to(".s6-ghost", { rotation: 8, duration: 13, ease: "none" }, 225.2);
+      tl.fromTo(".s6-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 225.35);
+      tl.fromTo(".s6-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 225.5);
+      tl.fromTo(".s6-c1", { opacity: 0, x: -70 }, { opacity: 1, x: 0, duration: 0.55, ease: "expo.out" }, 226.1);
+      tl.fromTo(".s6-c2", { opacity: 0, y: -56 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 226.45);
+      tl.fromTo(".s6-c3", { opacity: 0, y: 56 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 226.8);
+      tl.fromTo(".s6-c4", { opacity: 0, x: 70 }, { opacity: 1, x: 0, duration: 0.55, ease: "back.out(1.2)" }, 227.15);
+      tl.to(".s6-c1 .s6-tick path", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, 227.0);
+      tl.to(".s6-c2 .s6-tick path", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, 227.35);
+      tl.to(".s6-c3 .s6-tick path", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, 227.7);
+      tl.to(".s6-c4 .s6-tick path", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, 228.05);
+      tl.fromTo(".s6-azure", { opacity: 0, y: 90 }, { opacity: 1, y: 0, duration: 0.7, ease: "back.out(1.2)" }, 229.4);
+      tl.to(".s6-azure", { boxShadow: "0 0 50px rgba(61,214,140,0.25)", duration: 0.6, yoyo: true, repeat: 3, ease: "sine.inOut" }, 230.6);
+
+      /* ── T10: vertical push(238.7)── */
+      tl.to("#s6", { y: -1080, duration: 0.5, ease: "power3.inOut" }, 238.7);
+      tl.fromTo("#s7", { y: 1080, opacity: 1 }, { y: 0, duration: 0.5, ease: "power3.inOut", immediateRender: false }, 238.7);
+      tl.set("#s6", { visibility: "hidden" }, 239.3);
+
+      /* ════════════ S7 風險(239.2 – 250.7)════════════ */
+      tl.to(".s7-glow", { scale: 1.05, duration: 2.2, yoyo: true, repeat: 5, ease: "sine.inOut" }, 239.2);
+      tl.to(".s7-ghost", { y: -24, duration: 5.6, yoyo: true, repeat: 1, ease: "sine.inOut" }, 239.2);
+      tl.fromTo(".s7-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 239.35);
+      tl.fromTo(".s7-title", { opacity: 0 }, { opacity: 1, duration: 0.9, ease: "sine.out" }, 239.5);
+      tl.fromTo(".s7-r1 .s7-cost", { opacity: 0, x: -44 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 240.4);
+      tl.fromTo(".s7-r1 .s7-arrow", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.8)" }, 240.75);
+      tl.fromTo(".s7-r1 .s7-fix", { opacity: 0, x: 44 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 240.95);
+      tl.fromTo(".s7-r2 .s7-cost", { opacity: 0, x: -44 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 241.9);
+      tl.fromTo(".s7-r2 .s7-arrow", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.8)" }, 242.25);
+      tl.fromTo(".s7-r2 .s7-fix", { opacity: 0, x: 44 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 242.45);
+      tl.fromTo(".s7-r3 .s7-cost", { opacity: 0, x: -44 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 243.4);
+      tl.fromTo(".s7-r3 .s7-arrow", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.8)" }, 243.75);
+      tl.fromTo(".s7-r3 .s7-fix", { opacity: 0, x: 44 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 243.95);
+      tl.fromTo(".s7-bottom", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.7, ease: "sine.out" }, 245.6);
+
+      /* ── T11: blur crossfade(250.7)── */
+      tl.to("#s7", { filter: "blur(10px)", scale: 1.03, opacity: 0, duration: 0.5, ease: "power2.inOut" }, 250.7);
+      tl.fromTo("#s8", { filter: "blur(10px)", scale: 0.97, opacity: 0 }, { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, 250.8);
+      tl.set("#s7", { visibility: "hidden" }, 251.5);
+
+      /* ════════════ S8 行動方案 + 金句(251.3 – 265)════════════ */
+      tl.to(".s8-glow", { scale: 1.05, duration: 2.4, yoyo: true, repeat: 4, ease: "sine.inOut" }, 251.3);
+      tl.fromTo(".s8-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 251.45);
+      tl.fromTo(".s8-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 251.6);
+      tl.fromTo(".s8-line", { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "power2.inOut" }, 252.2);
+      tl.fromTo(".s8-d1", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, 252.4);
+      tl.fromTo(".s8-d2", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, 252.7);
+      tl.fromTo(".s8-d3", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, 253.0);
+      tl.fromTo(".s8-t1", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 252.8);
+      tl.fromTo(".s8-t2", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 253.15);
+      tl.fromTo(".s8-t3", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.55, ease: "expo.out" }, 253.5);
+      /* 最終場景:允許出場 → 金句 */
+      tl.to(".s8-planewrap", { opacity: 0, duration: 0.7, ease: "power2.in" }, 257.6);
+      tl.set(".s8-planewrap", { visibility: "hidden" }, 258.35);
+      tl.fromTo(".s8-q1", { opacity: 0, y: 44 }, { opacity: 1, y: 0, duration: 1.1, ease: "sine.out" }, 258.5);
+      tl.fromTo(".s8-q2", { opacity: 0, y: 44 }, { opacity: 1, y: 0, duration: 1.1, ease: "sine.out" }, 259.7);
+      tl.fromTo(".s8-mark", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "sine.out" }, 261.3);
+      tl.to(".s8-mark", { opacity: 0.45, duration: 0.7, yoyo: true, repeat: 1, ease: "sine.inOut" }, 262.2);
+      tl.to("#s8 .inner", { opacity: 0, duration: 1.3, ease: "power1.in" }, 263.6);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

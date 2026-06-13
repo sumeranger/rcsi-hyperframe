@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@700;900&family=JetBrains+Mono:wght@400;700&display=block" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0; width: 1920px; height: 1080px; overflow: hidden;
+        background: #0B0E14;
+      }
+      body {
+        font-family: "Noto Sans TC", "Noto Sans CJK TC", sans-serif;
+        color: #E8ECF4;
+      }
+      .serif { font-family: "Noto Serif TC", "Noto Serif CJK TC", serif; font-weight: 900; }
+      .mono { font-family: "JetBrains Mono", "Noto Sans Mono CJK TC", monospace; }
+
+      .scene {
+        position: absolute; top: 0; left: 0; width: 1920px; height: 1080px;
+        overflow: hidden; background: #0B0E14;
+      }
+      #s1 { z-index: 1; }
+      #s2 { z-index: 2; opacity: 0; }
+      #s3 { z-index: 3; opacity: 0; }
+      #s4 { z-index: 4; opacity: 0; background: #07090E; }
+      #s5 { z-index: 5; opacity: 0; }
+      #s6 { z-index: 6; opacity: 0; }
+      #s7 { z-index: 7; opacity: 0; }
+      #s8 { z-index: 8; opacity: 0; }
+      .inner { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; }
+
+      /* ── 共用裝飾 ───────────────────────────── */
+      .grid-bg {
+        position: absolute; top: 0; left: 0; width: 1920px; height: 1080px;
+        background-image:
+          linear-gradient(rgba(74, 88, 120, 0.14) 1px, rgba(74, 88, 120, 0) 1px),
+          linear-gradient(90deg, rgba(74, 88, 120, 0.14) 1px, rgba(74, 88, 120, 0) 1px);
+        background-size: 96px 96px;
+      }
+      .glow {
+        position: absolute; width: 1700px; height: 1700px; border-radius: 50%;
+        pointer-events: none;
+      }
+      .corner-tl {
+        position: absolute; top: 44px; left: 60px;
+        font-size: 20px; letter-spacing: 0.12em; color: #9CA6BA;
+      }
+      .corner-br {
+        position: absolute; bottom: 44px; right: 60px;
+        font-size: 20px; letter-spacing: 0.12em; color: #9CA6BA;
+      }
+      .toprule {
+        position: absolute; top: 92px; left: 60px; width: 1800px; height: 2px;
+        background: rgba(74, 88, 120, 0.45);
+      }
+      .kicker {
+        font-size: 22px; letter-spacing: 0.18em; color: #8B94A7;
+        text-transform: uppercase;
+      }
+      .chip {
+        display: inline-block; border: 2px solid #4A5878; border-radius: 4px;
+        padding: 8px 18px; font-size: 20px; color: #8B94A7; letter-spacing: 0.06em;
+      }
+      .card {
+        background: #121826; border: 2px solid #2A3447; border-radius: 10px;
+      }
+
+      /* ── S1 深夜告警 ───────────────────────── */
+      .s1-glow { top: -500px; left: 700px; background: radial-gradient(circle, rgba(229,72,77,0.26) 0%, rgba(229,72,77,0) 62%); }
+      .s1-ghostlock { position: absolute; right: -60px; top: 240px; opacity: 0.13; }
+      .s1-ts { position: absolute; top: 120px; right: 140px; font-size: 34px; color: #E5484D; letter-spacing: 0.1em; }
+      .s1-host { position: absolute; top: 124px; left: 140px; }
+      .s1-term { position: absolute; top: 200px; left: 140px; width: 1240px; }
+      .s1-termbar {
+        height: 56px; background: #1A2233; border-radius: 10px 10px 0 0;
+        display: flex; align-items: center; padding: 0 24px; gap: 10px;
+        border: 2px solid #2A3447; border-bottom: none;
+      }
+      .s1-dot { width: 16px; height: 16px; border-radius: 50%; background: #4A5878; }
+      .s1-dot.red { background: #E5484D; }
+      .s1-termtitle { margin-left: 14px; font-size: 20px; color: #8B94A7; }
+      .s1-termbody {
+        background: #0E1420; border: 2px solid #2A3447; border-radius: 0 0 10px 10px;
+        padding: 36px 44px; font-size: 26px; line-height: 1.75; color: #C8D0DE;
+      }
+      .s1-line { white-space: nowrap; }
+      .s1-msg1 { color: #F2555A; }
+      .s1-victim { color: #F2555A; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+      .s1-rule { position: absolute; top: 700px; left: 140px; width: 220px; height: 5px; background: #E5484D; transform-origin: left center; }
+      .s1-head { position: absolute; top: 736px; left: 140px; font-size: 76px; line-height: 1.3; letter-spacing: 0.02em; }
+      .s1-sub { position: absolute; top: 868px; left: 140px; font-size: 32px; font-weight: 350; color: #8B94A7; }
+      .s1-chips { position: absolute; top: 952px; left: 140px; display: flex; gap: 18px; }
+      .s1-chips .alarm { border-color: #7F1D24; color: #F2555A; }
+
+      /* ── S2 預設世界的鎖 ───────────────────── */
+      .s2-glow { top: -700px; left: -500px; background: radial-gradient(circle, rgba(74,88,120,0.30) 0%, rgba(74,88,120,0) 62%); }
+      .s2-ghost { position: absolute; right: 40px; bottom: -70px; font-size: 420px; font-weight: 900; color: rgba(74,88,120,0.07); letter-spacing: -0.04em; }
+      .s2-kicker { position: absolute; top: 120px; left: 140px; }
+      .s2-title { position: absolute; top: 158px; left: 140px; font-size: 60px; }
+      .s2-diagram { position: absolute; top: 270px; left: 0; width: 1180px; height: 620px; }
+      .s2-table {
+        position: absolute; left: 200px; top: 330px; width: 760px; height: 120px;
+        display: flex; align-items: center; justify-content: center; gap: 24px;
+      }
+      .s2-tablename { font-size: 34px; font-weight: 700; }
+      .s2-tablerows { font-size: 20px; color: #8B94A7; }
+      .s2-cap {
+        position: absolute; top: 60px; width: 380px; height: 88px; border-radius: 44px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 26px; background: #121826;
+      }
+      .s2-capsel { left: 110px; border: 2px solid #6B7894; color: #E8ECF4; }
+      .s2-capdel { left: 620px; border: 2px solid #E5484D; color: #F2555A; }
+      .s2-lock {
+        position: absolute; width: 84px; height: 84px; border-radius: 50%;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        font-size: 30px; font-weight: 700; background: #0E1420;
+      }
+      .s2-locks { left: 350px; top: 226px; border: 3px solid #C8D0DE; color: #E8ECF4; }
+      .s2-lockx { left: 760px; top: 226px; border: 3px solid #E5484D; color: #F2555A; }
+      .s2-locklabel { position: absolute; font-size: 20px; color: #8B94A7; width: 200px; text-align: center; }
+      .s2-locklabel.ls { left: 292px; top: 174px; }
+      .s2-locklabel.lx { left: 702px; top: 174px; }
+      .s2-matrix { position: absolute; right: 140px; top: 330px; width: 460px; padding: 30px 36px; }
+      .s2-mtitle { font-size: 26px; color: #8B94A7; margin-bottom: 18px; letter-spacing: 0.1em; }
+      .s2-mrow { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-top: 2px solid #2A3447; font-size: 26px; }
+      .s2-mok { color: #C8D0DE; font-weight: 700; }
+      .s2-mno { color: #F2555A; font-weight: 700; }
+      .s2-mdesc { font-size: 22px; color: #8B94A7; }
+      .s2-caption { position: absolute; top: 920px; left: 140px; font-size: 34px; font-weight: 350; line-height: 1.55; }
+      .s2-caption2 { position: absolute; top: 980px; left: 140px; font-size: 27px; font-weight: 350; color: #8B94A7; }
+      .s2-wait { position: absolute; left: 638px; top: 162px; font-size: 20px; color: #F2555A; letter-spacing: 0.15em; }
+
+      /* ── S3 死結成環 ───────────────────────── */
+      .s3-glow { top: -350px; left: 200px; background: radial-gradient(circle, rgba(229,72,77,0.30) 0%, rgba(229,72,77,0) 60%); }
+      .s3-kicker { position: absolute; top: 116px; left: 140px; }
+      .s3-title { position: absolute; top: 154px; left: 140px; font-size: 60px; }
+      .s3-node {
+        position: absolute; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 4px;
+      }
+      .s3-proc { width: 340px; height: 96px; border-radius: 48px; background: #121826; font-size: 26px; }
+      .s3-res { width: 420px; height: 88px; border-radius: 10px; background: #121826; border: 2px solid #6B7894; font-size: 25px; }
+      .s3-psel { left: 120px; top: 470px; border: 2px solid #C8D0DE; }
+      .s3-pdel { left: 1000px; top: 470px; border: 2px solid #E5484D; color: #F2555A; }
+      .s3-rnc { left: 520px; top: 250px; }
+      .s3-rcl { left: 520px; top: 690px; }
+      .s3-nodesub { font-size: 19px; color: #8B94A7; }
+      .s3-svg { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; pointer-events: none; }
+      .s3-edge { fill: none; stroke-width: 5; stroke-dasharray: 1; stroke-dashoffset: 1; }
+      .s3-hold { stroke: #9AA6BD; }
+      .s3-wait { stroke: #E5484D; }
+      .s3-edgelabel { position: absolute; font-size: 20px; padding: 4px 12px; border-radius: 4px; background: #0E1420; }
+      .s3-edgelabel.hold { color: #C8D0DE; border: 2px solid #4A5878; }
+      .s3-edgelabel.wait { color: #F2555A; border: 2px solid #7F1D24; }
+      .s3-steps { position: absolute; left: 1420px; top: 280px; width: 400px; display: flex; flex-direction: column; gap: 22px; }
+      .s3-step { border-left: none; border: 2px solid #2A3447; border-radius: 8px; background: #121826; padding: 16px 20px; font-size: 23px; line-height: 1.5; }
+      .s3-step b { color: #F2555A; font-weight: 700; }
+      .s3-cycle { position: absolute; left: 560px; top: 505px; width: 340px; text-align: center; font-size: 26px; color: #F2555A; font-weight: 700; letter-spacing: 0.1em; }
+      .s3-scan { position: absolute; top: 220px; left: -8px; width: 6px; height: 620px; background: rgba(232,236,244,0.55); box-shadow: 0 0 28px rgba(232,236,244,0.5); }
+      .s3-flash { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; background: rgba(229,72,77,0.32); opacity: 0; }
+      .s3-x { position: absolute; left: 196px; top: 432px; font-size: 150px; font-weight: 900; color: #E5484D; line-height: 1; text-shadow: 0 0 40px rgba(229,72,77,0.6); }
+      .s3-victim {
+        position: absolute; top: 420px; left: 0; width: 1380px; text-align: center;
+        font-size: 150px; color: #F2555A; letter-spacing: 0.08em;
+        text-shadow: 0 14px 60px rgba(7,9,14,0.95), 0 0 90px rgba(229,72,77,0.45);
+      }
+      .s3-victimsub { position: absolute; top: 625px; left: 0; width: 1380px; text-align: center; font-size: 27px; color: #C8D0DE; text-shadow: 0 6px 24px rgba(7,9,14,0.95); }
+      .s3-bottom { position: absolute; bottom: 56px; left: 140px; font-size: 22px; color: #8B94A7; letter-spacing: 0.06em; }
+      .s3-closing { position: absolute; bottom: 104px; left: 140px; font-size: 32px; font-weight: 350; color: #E8ECF4; }
+
+      /* ── S4 一行指令 ───────────────────────── */
+      .s4-glow { top: -310px; left: 110px; background: radial-gradient(circle, rgba(61,214,140,0.22) 0%, rgba(61,214,140,0) 60%); opacity: 0; }
+      .s4-term { position: absolute; top: 250px; left: 440px; width: 1040px; }
+      .s4-termbar {
+        height: 52px; background: #101826; border-radius: 10px 10px 0 0;
+        display: flex; align-items: center; padding: 0 24px; gap: 10px;
+        border: 2px solid #1E2A3C; border-bottom: none;
+      }
+      .s4-termtitle { margin-left: 8px; font-size: 19px; color: #8B94A7; }
+      .s4-termbody {
+        background: #0A1018; border: 2px solid #1E2A3C; border-radius: 0 0 10px 10px;
+        padding: 40px 52px; font-size: 31px; line-height: 1.8; color: #3DD68C;
+      }
+      .s4-line { white-space: nowrap; }
+      .s4-cursor { display: inline-block; width: 18px; height: 36px; background: #3DD68C; vertical-align: middle; margin-left: 6px; }
+      .s4-done { margin-top: 14px; font-size: 22px; color: #8B94A7; }
+      .s4-head { position: absolute; top: 640px; left: 0; width: 1920px; text-align: center; font-size: 84px; letter-spacing: 0.04em; }
+      .s4-notes { position: absolute; top: 800px; left: 0; width: 1920px; display: flex; justify-content: center; gap: 22px; }
+      .s4-notes .chip { border-color: #14532D; color: #3DD68C; }
+      .s4-tail { position: absolute; top: 896px; left: 0; width: 1920px; text-align: center; font-size: 29px; font-weight: 350; color: #8B94A7; }
+
+      /* ── S5 版本快照 ───────────────────────── */
+      .s5-glow { top: -560px; left: 900px; background: radial-gradient(circle, rgba(61,214,140,0.20) 0%, rgba(61,214,140,0) 62%); }
+      .s5-rails { position: absolute; left: 0; bottom: 150px; width: 1920px; height: 64px; opacity: 0.2; }
+      .s5-rail { position: absolute; left: 0; width: 1920px; height: 3px; background: #4A5878; }
+      .s5-kicker { position: absolute; top: 116px; left: 140px; color: #3DD68C; }
+      .s5-title { position: absolute; top: 154px; left: 140px; font-size: 60px; }
+      .s5-delcap {
+        position: absolute; left: 200px; top: 280px; width: 430px; height: 80px; border-radius: 40px;
+        border: 2px solid #E5484D; background: #121826; color: #F2555A;
+        display: flex; align-items: center; justify-content: center; font-size: 25px;
+      }
+      .s5-table { position: absolute; left: 140px; top: 430px; width: 560px; padding: 26px 32px; }
+      .s5-tabletitle { font-size: 26px; font-weight: 700; margin-bottom: 16px; }
+      .s5-row {
+        background: #0E1420; border: 2px solid #3A4659; border-radius: 8px;
+        padding: 18px 22px; font-size: 24px; color: #C8D0DE;
+        display: flex; justify-content: space-between; align-items: center;
+      }
+      .s5-xbadge { font-size: 20px; color: #F2555A; border: 2px solid #7F1D24; border-radius: 4px; padding: 3px 10px; }
+      .s5-selcap {
+        position: absolute; left: 140px; top: 800px; width: 470px; height: 84px; border-radius: 42px;
+        border: 2px solid #3DD68C; background: #121826; color: #3DD68C;
+        display: flex; align-items: center; justify-content: center; font-size: 25px;
+      }
+      .s5-store { position: absolute; left: 1220px; top: 280px; width: 560px; height: 470px; padding: 26px 30px; }
+      .s5-storetitle { font-size: 24px; color: #8B94A7; letter-spacing: 0.1em; margin-bottom: 20px; }
+      .s5-ver {
+        border: 2px solid #14532D; border-radius: 8px; background: #0E1A14;
+        padding: 20px 24px; font-size: 23px; color: #3DD68C; margin-bottom: 16px;
+      }
+      .s5-ver .meta { font-size: 19px; color: #8B94A7; margin-top: 6px; }
+      .s5-verold { border-color: #2A3447; color: #8B94A7; background: #0E1420; }
+      .s5-svg { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; pointer-events: none; }
+      .s5-path { fill: none; stroke-width: 5; stroke-dasharray: 1; stroke-dashoffset: 1; }
+      .s5-pathdel { stroke: #E5484D; }
+      .s5-pathptr { stroke: #6B7894; stroke-width: 4; }
+      .s5-pathsel { stroke: #3DD68C; }
+      .s5-plabel { position: absolute; font-size: 20px; padding: 5px 14px; border-radius: 4px; background: #0E1420; }
+      .s5-plabel.del { left: 700px; top: 316px; color: #F2555A; border: 2px solid #7F1D24; }
+      .s5-plabel.ptr { left: 800px; top: 470px; color: #C8D0DE; border: 2px solid #4A5878; }
+      .s5-plabel.sel { left: 700px; top: 836px; color: #3DD68C; border: 2px solid #14532D; }
+      .s5-caption { position: absolute; top: 938px; left: 140px; font-size: 33px; font-weight: 350; }
+      .s5-foot { position: absolute; top: 996px; left: 140px; font-size: 25px; font-weight: 350; color: #8B94A7; }
+
+      /* ── S6 效益與證據 ─────────────────────── */
+      .s6-glow { top: -640px; left: -420px; background: radial-gradient(circle, rgba(61,214,140,0.18) 0%, rgba(61,214,140,0) 62%); }
+      .s6-ghost { position: absolute; right: -40px; top: 110px; font-size: 480px; font-weight: 900; color: rgba(61,214,140,0.07); line-height: 1; }
+      .s6-kicker { position: absolute; top: 116px; left: 140px; color: #3DD68C; }
+      .s6-title { position: absolute; top: 154px; left: 140px; font-size: 60px; }
+      .s6-card { position: absolute; width: 800px; height: 200px; padding: 30px 38px; }
+      .s6-c1 { left: 140px; top: 290px; }
+      .s6-c2 { left: 980px; top: 290px; }
+      .s6-c3 { left: 140px; top: 520px; }
+      .s6-c4 { left: 980px; top: 520px; }
+      .s6-chead { font-size: 34px; margin-bottom: 12px; display: flex; align-items: center; gap: 16px; }
+      .s6-tick { width: 40px; height: 40px; flex: none; }
+      .s6-tick path { fill: none; stroke: #3DD68C; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+      .s6-cline { font-size: 24px; font-weight: 350; color: #8B94A7; line-height: 1.5; }
+      .s6-cline b { color: #F2555A; font-weight: 700; }
+      .s6-azure {
+        position: absolute; left: 140px; top: 790px; width: 1640px; height: 150px;
+        border: 2px solid #14532D; border-radius: 10px; background: #0E1A14;
+        display: flex; align-items: center; padding: 0 48px; gap: 36px;
+      }
+      .s6-azure .big { font-size: 33px; font-weight: 700; color: #3DD68C; flex: none; width: 620px; line-height: 1.4; }
+      .s6-azure .bigmono { font-size: 25px; font-weight: 700; letter-spacing: 0.02em; }
+      .s6-azure .cite { font-size: 23px; color: #8B94A7; line-height: 1.5; }
+
+      /* ── S7 風險 ───────────────────────────── */
+      .s7-glow { top: -560px; left: 360px; background: radial-gradient(circle, rgba(240,180,41,0.16) 0%, rgba(240,180,41,0) 62%); }
+      .s7-ghost { position: absolute; right: 30px; bottom: -40px; font-size: 430px; font-weight: 900; color: rgba(240,180,41,0.07); line-height: 1; }
+      .s7-kicker { position: absolute; top: 116px; left: 140px; color: #F0B429; }
+      .s7-title { position: absolute; top: 154px; left: 140px; font-size: 60px; }
+      .s7-row { position: absolute; left: 140px; width: 1640px; height: 190px; }
+      .s7-r1 { top: 280px; } .s7-r2 { top: 500px; } .s7-r3 { top: 720px; }
+      .s7-cost {
+        position: absolute; left: 0; top: 0; width: 740px; height: 190px;
+        border: 2px solid #6B5418; border-radius: 10px; background: #161306;
+        padding: 26px 32px;
+      }
+      .s7-costhead { font-size: 30px; font-weight: 700; color: #F0B429; margin-bottom: 10px; }
+      .s7-costline { font-size: 23px; font-weight: 350; color: #C8D0DE; line-height: 1.5; }
+      .s7-arrow { position: absolute; left: 752px; top: 72px; width: 136px; text-align: center; font-size: 24px; color: #8B94A7; white-space: nowrap; }
+      .s7-fix {
+        position: absolute; left: 900px; top: 0; width: 740px; height: 190px;
+        border: 2px solid #2A3447; border-radius: 10px; background: #121826;
+        padding: 26px 32px;
+      }
+      .s7-fixhead { font-size: 26px; font-weight: 700; color: #E8ECF4; margin-bottom: 10px; }
+      .s7-fixline { font-size: 23px; font-weight: 350; color: #8B94A7; line-height: 1.5; }
+      .s7-bottom { position: absolute; bottom: 48px; left: 140px; font-size: 22px; color: #8B94A7; letter-spacing: 0.04em; }
+
+      /* ── S8 行動方案 + 金句 ─────────────────── */
+      .s8-glow { top: -480px; left: 200px; background: radial-gradient(circle, rgba(61,214,140,0.16) 0%, rgba(61,214,140,0) 62%); }
+      .s8-planewrap { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; }
+      .s8-kicker { position: absolute; top: 150px; left: 140px; color: #3DD68C; }
+      .s8-title { position: absolute; top: 190px; left: 140px; font-size: 60px; }
+      .s8-line { position: absolute; left: 360px; top: 470px; width: 1200px; height: 4px; background: #2A3447; transform-origin: left center; }
+      .s8-dot {
+        position: absolute; top: 422px; width: 100px; height: 100px; border-radius: 50%;
+        background: #121826; border: 3px solid #3DD68C; color: #3DD68C;
+        display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 700;
+      }
+      .s8-d1 { left: 310px; } .s8-d2 { left: 910px; } .s8-d3 { left: 1510px; }
+      .s8-steptext { position: absolute; top: 570px; width: 480px; text-align: center; }
+      .s8-t1 { left: 120px; } .s8-t2 { left: 720px; } .s8-t3 { left: 1320px; }
+      .s8-sthead { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
+      .s8-stline { font-size: 24px; font-weight: 350; color: #8B94A7; line-height: 1.55; }
+      .s8-stmono { margin-top: 12px; font-size: 19px; color: #3DD68C; }
+      .s8-quotewrap { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; }
+      .s8-q1, .s8-q2 {
+        position: absolute; left: 0; width: 1920px; text-align: center;
+        font-size: 66px; line-height: 1.4; letter-spacing: 0.04em;
+      }
+      .s8-q1 { top: 380px; }
+      .s8-q2 { top: 500px; }
+      .s8-q2 .em { color: #3DD68C; }
+      .s8-mark { position: absolute; top: 690px; left: 0; width: 1920px; text-align: center; font-size: 27px; color: #3DD68C; letter-spacing: 0.08em; }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-dtl2" id="root" data-composition-id="main" data-start="0" data-duration="116" data-width="1920" data-height="1080">
+      <!-- ════ S1 深夜告警 ════ -->
+      <div data-hf-id="hf-yihu" id="s1" class="scene">
+        <div data-hf-id="hf-lm34" class="inner">
+          <div data-hf-id="hf-q4u8" class="grid-bg"></div>
+          <div data-hf-id="hf-pifs" class="glow s1-glow" data-layout-ignore=""></div>
+          <svg data-hf-id="hf-xin1" class="s1-ghostlock" width="460" height="560" viewBox="0 0 46 56" data-layout-allow-overflow="">
+            <rect data-hf-id="hf-qhy3" x="6" y="24" width="34" height="26" rx="4" fill="none" stroke="#E5484D" stroke-width="3" />
+            <path data-hf-id="hf-cu32" d="M 13 24 V 15 a 10 10 0 0 1 20 0 V 24" fill="none" stroke="#E5484D" stroke-width="3" />
+          </svg>
+          <div data-hf-id="hf-j5dj" class="toprule"></div>
+          <div data-hf-id="hf-8q2l" class="corner-tl mono">RCSI BRIEF · 01 / 事故</div>
+          <div data-hf-id="hf-4myw" class="corner-br mono">DB PLATFORM · PROD</div>
+          <div data-hf-id="hf-326z" class="s1-host"><span data-hf-id="hf-9p88" class="chip mono">PROD-SQL01 · 生產資料庫</span></div>
+          <div data-hf-id="hf-vg6w" class="s1-ts mono">03:17:42</div>
+          <div data-hf-id="hf-n3hb" class="s1-term">
+            <div data-hf-id="hf-y3tq" class="s1-termbar">
+              <div data-hf-id="hf-ksxj" class="s1-dot red"></div><div data-hf-id="hf-6xz2" class="s1-dot"></div><div data-hf-id="hf-d8wy" class="s1-dot"></div>
+              <div data-hf-id="hf-0k3u" class="s1-termtitle mono">deadlock-alert.log</div>
+            </div>
+            <div data-hf-id="hf-ig6o" class="s1-termbody mono">
+              <div data-hf-id="hf-35k0" class="s1-line s1-l1 s1-msg1">Msg 1205, Level 13, State 51, Line 4</div>
+              <div data-hf-id="hf-qnbf" class="s1-line s1-l2">Transaction (Process ID 52) was deadlocked on lock</div>
+              <div data-hf-id="hf-akbl" class="s1-line s1-l3">resources with another process and has been chosen</div>
+              <div data-hf-id="hf-ea1o" class="s1-line s1-l4">as the <span data-hf-id="hf-3iyd" class="s1-victim">deadlock victim</span>. Rerun the transaction.</div>
+            </div>
+          </div>
+          <div data-hf-id="hf-5la3" class="s1-rule"></div>
+          <div data-hf-id="hf-ty74" class="s1-head serif">又一筆交易,被資料庫親手砍掉。</div>
+          <div data-hf-id="hf-0fqn" class="s1-sub">SELECT 遇上 DELETE —— 同一張表,互相等鎖,兩敗俱傷。</div>
+          <div data-hf-id="hf-gjlq" class="s1-chips">
+            <span data-hf-id="hf-9htx" class="chip mono alarm">error 1205 · 近期接連發生</span>
+            <span data-hf-id="hf-sxqm" class="chip mono">victim: spid 52 (SELECT)</span>
+            <span data-hf-id="hf-jese" class="chip mono">isolation: READ COMMITTED(預設)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ S2 預設世界的鎖 ════ -->
+      <div data-hf-id="hf-ukdt" id="s2" class="scene">
+        <div data-hf-id="hf-bug8" class="inner">
+          <div data-hf-id="hf-wbnc" class="grid-bg"></div>
+          <div data-hf-id="hf-oi0h" class="glow s2-glow" data-layout-ignore=""></div>
+          <div data-hf-id="hf-xnh3" class="s2-ghost serif" data-layout-allow-overflow="">S·X</div>
+          <div data-hf-id="hf-g7av" class="toprule"></div>
+          <div data-hf-id="hf-tbs7" class="corner-tl mono">RCSI BRIEF · 02 / 機制</div>
+          <div data-hf-id="hf-kla8" class="corner-br mono">DB PLATFORM · PROD</div>
+          <div data-hf-id="hf-tvtc" class="s2-kicker mono kicker">ISOLATION LEVEL: READ COMMITTED(SQL SERVER 預設)</div>
+          <div data-hf-id="hf-3o41" class="s2-title serif">預設世界:讀和寫,搶同一把鎖</div>
+          <div data-hf-id="hf-lfwb" class="s2-diagram">
+            <div data-hf-id="hf-p1ea" class="s2-cap s2-capsel mono">SELECT … FROM Orders</div>
+            <div data-hf-id="hf-g3kt" class="s2-cap s2-capdel mono">DELETE Orders WHERE …</div>
+            <div data-hf-id="hf-y9j7" class="s2-wait mono">WAITING…</div>
+            <div data-hf-id="hf-zw1e" class="s2-locklabel ls">S 共享鎖(讀)</div>
+            <div data-hf-id="hf-2vnl" class="s2-locklabel lx">X 排他鎖(寫)</div>
+            <div data-hf-id="hf-wxl5" class="s2-lock s2-locks mono">S</div>
+            <div data-hf-id="hf-yvr7" class="s2-lock s2-lockx mono">X</div>
+            <div data-hf-id="hf-ecl6" class="s2-table card">
+              <div data-hf-id="hf-qv30" class="s2-tablename">Orders 資料表</div>
+              <div data-hf-id="hf-5l87" class="s2-tablerows mono">1.2M rows</div>
+            </div>
+          </div>
+          <div data-hf-id="hf-eodf" class="s2-matrix card">
+            <div data-hf-id="hf-2wyg" class="s2-mtitle mono">鎖相容性矩陣</div>
+            <div data-hf-id="hf-6i1n" class="s2-mrow"><span data-hf-id="hf-bdo9" class="mono">S + S</span><span data-hf-id="hf-nzon" class="s2-mok">✓</span><span data-hf-id="hf-h77u" class="s2-mdesc">同時讀,沒問題</span></div>
+            <div data-hf-id="hf-jml7" class="s2-mrow"><span data-hf-id="hf-9e54" class="mono">S + X</span><span data-hf-id="hf-26ie" class="s2-mno">✗</span><span data-hf-id="hf-ctmm" class="s2-mdesc">讀寫互卡,必等待</span></div>
+            <div data-hf-id="hf-j8a6" class="s2-mrow"><span data-hf-id="hf-swvt" class="mono">X + X</span><span data-hf-id="hf-fboa" class="s2-mno">✗</span><span data-hf-id="hf-ndk1" class="s2-mdesc">寫寫互卡,必等待</span></div>
+          </div>
+          <div data-hf-id="hf-7yod" class="s2-caption">讀,要拿 S 鎖;刪,要拿 X 鎖。<b data-hf-id="hf-k5jb">S 與 X 互不相容</b> —— 誰晚到,誰就排隊。</div>
+          <div data-hf-id="hf-pekh" class="s2-caption2">排隊還算小事。真正的災難,是兩個人「互相」等對方手上的鎖……</div>
+        </div>
+      </div>
+
+      <!-- ════ S3 死結成環 ════ -->
+      <div data-hf-id="hf-tsq0" id="s3" class="scene">
+        <div data-hf-id="hf-anj5" class="inner">
+          <div data-hf-id="hf-v4q9" class="grid-bg"></div>
+          <div data-hf-id="hf-2vwm" class="glow s3-glow" data-layout-ignore=""></div>
+          <div data-hf-id="hf-fszu" class="toprule"></div>
+          <div data-hf-id="hf-yadh" class="corner-tl mono">RCSI BRIEF · 03 / 死結重演</div>
+          <div data-hf-id="hf-jed5" class="corner-br mono">DB PLATFORM · PROD</div>
+          <div data-hf-id="hf-uj7e" class="s3-kicker mono kicker">DEADLOCK GRAPH — 還原那天凌晨發生的事</div>
+          <div data-hf-id="hf-u35v" class="s3-title serif">死結,是怎麼長出來的</div>
+
+          <svg data-hf-id="hf-x3dw" class="s3-svg" viewBox="0 0 1920 1080">
+            <path data-hf-id="hf-hhhj" id="s3e1" class="s3-edge s3-hold" pathLength="1" d="M 400 470 L 580 350" />
+            <path data-hf-id="hf-h2tf" id="s3e2" class="s3-edge s3-hold" pathLength="1" d="M 1060 560 L 880 690" />
+            <path data-hf-id="hf-6n2t" id="s3e3" class="s3-edge s3-wait" pathLength="1" d="M 400 565 L 580 700" />
+            <path data-hf-id="hf-vkth" id="s3e4" class="s3-edge s3-wait" pathLength="1" d="M 1060 475 L 880 345" />
+          </svg>
+          <div data-hf-id="hf-b3m2" class="s3-edgelabel hold mono" id="s3l1" style="left: 400px; top: 372px;">① 持有 S 鎖</div>
+          <div data-hf-id="hf-gkx0" class="s3-edgelabel hold mono" id="s3l2" style="left: 942px; top: 640px;">② 持有 X 鎖</div>
+          <div data-hf-id="hf-vpp3" class="s3-edgelabel wait mono" id="s3l3" style="left: 396px; top: 642px;">③ 等待…</div>
+          <div data-hf-id="hf-sn7z" class="s3-edgelabel wait mono" id="s3l4" style="left: 950px; top: 372px;">④ 等待…</div>
+
+          <div data-hf-id="hf-hwq8" class="s3-node s3-proc s3-psel mono"><span data-hf-id="hf-og8d">spid 52 · SELECT</span><span data-hf-id="hf-630v" class="s3-nodesub">查訂單(走索引)</span></div>
+          <div data-hf-id="hf-vtsd" class="s3-node s3-proc s3-pdel mono"><span data-hf-id="hf-yuok">spid 87 · DELETE</span><span data-hf-id="hf-5e68" class="s3-nodesub">刪歸檔資料</span></div>
+          <div data-hf-id="hf-dhq1" class="s3-node s3-res s3-rnc mono"><span data-hf-id="hf-hswe">NC Index · IX_Orders_No</span><span data-hf-id="hf-bnc5" class="s3-nodesub">非叢集索引</span></div>
+          <div data-hf-id="hf-5u35" class="s3-node s3-res s3-rcl mono"><span data-hf-id="hf-qlgk">Clustered Index</span><span data-hf-id="hf-lxoi" class="s3-nodesub">資料本體</span></div>
+          <div data-hf-id="hf-1i6k" class="s3-cycle mono">⟳ wait-for graph 成環</div>
+
+          <div data-hf-id="hf-9lt4" class="s3-steps">
+            <div data-hf-id="hf-122y" class="s3-step" id="s3s1">① SELECT 先鎖住<b data-hf-id="hf-8gx1">索引列</b>(S 鎖),準備回表查資料</div>
+            <div data-hf-id="hf-o9bp" class="s3-step" id="s3s2">② 同一瞬間,DELETE 鎖住<b data-hf-id="hf-mfce">資料列</b>(X 鎖)</div>
+            <div data-hf-id="hf-hkly" class="s3-step" id="s3s3">③ SELECT 做 Key Lookup → 要等 DELETE 的資料列</div>
+            <div data-hf-id="hf-7qg6" class="s3-step" id="s3s4">④ DELETE 要同步刪索引列 → 反過來等 SELECT。<b data-hf-id="hf-8p2w">環,閉合了。</b></div>
+          </div>
+
+          <div data-hf-id="hf-ru59" class="s3-scan" data-layout-allow-overflow=""></div>
+          <div data-hf-id="hf-15sp" class="s3-x" data-layout-allow-overflow="">✗</div>
+          <div data-hf-id="hf-fl1j" class="s3-victim serif" data-layout-allow-overflow="">犧 牲 者</div>
+          <div data-hf-id="hf-57so" class="s3-victimsub" data-layout-allow-overflow="">死結偵測器每 5 秒掃描一次 —— 選 rollback 成本較低的那個,當場回滾。</div>
+          <div data-hf-id="hf-6p34" class="s3-closing">這不是誰的程式寫錯了 —— 是預設隔離級別下,遲早會發生的宿命。</div>
+          <div data-hf-id="hf-1iqi" class="s3-bottom mono">lock monitor · scan interval 5s · victim = least rollback cost · error 1205 回傳給應用程式</div>
+          <div data-hf-id="hf-4fla" class="s3-flash" data-layout-ignore=""></div>
+        </div>
+      </div>
+
+      <!-- ════ S4 一行指令 ════ -->
+      <div data-hf-id="hf-pulz" id="s4" class="scene">
+        <div data-hf-id="hf-b1u6" class="inner">
+          <div data-hf-id="hf-corz" class="glow s4-glow" data-layout-ignore=""></div>
+          <div data-hf-id="hf-ph5c" class="corner-tl mono">RCSI BRIEF · 04 / 解方</div>
+          <div data-hf-id="hf-jso6" class="corner-br mono">DB PLATFORM · PROD</div>
+          <div data-hf-id="hf-ekm4" class="s4-term">
+            <div data-hf-id="hf-uwpv" class="s4-termbar">
+              <div data-hf-id="hf-xidj" class="s1-dot" style="background:#3DD68C"></div><div data-hf-id="hf-dn7z" class="s1-dot"></div><div data-hf-id="hf-e1j0" class="s1-dot"></div>
+              <div data-hf-id="hf-zint" class="s4-termtitle mono">SSMS — master</div>
+            </div>
+            <div data-hf-id="hf-f13h" class="s4-termbody mono">
+              <div data-hf-id="hf-cf9r" class="s4-line s4-sql1">ALTER DATABASE [Production]</div>
+              <div data-hf-id="hf-59kr" class="s4-line s4-sql2">&#160;&#160;SET READ_COMMITTED_SNAPSHOT ON</div>
+              <div data-hf-id="hf-uwx7" class="s4-line s4-sql3">&#160;&#160;WITH ROLLBACK IMMEDIATE;<span data-hf-id="hf-90q7" class="s4-cursor"></span></div>
+              <div data-hf-id="hf-mo75" class="s4-done">Command(s) completed successfully.</div>
+            </div>
+          </div>
+          <div data-hf-id="hf-kdqt" class="s4-head serif">讓讀的人,不再拿鎖。</div>
+          <div data-hf-id="hf-tftt" class="s4-notes">
+            <span data-hf-id="hf-askk" class="chip mono">0 行應用程式碼修改</span>
+            <span data-hf-id="hf-l0wk" class="chip mono">資料庫層級,一次切換</span>
+            <span data-hf-id="hf-bbfe" class="chip mono">這就是 RCSI</span>
+          </div>
+          <div data-hf-id="hf-4r23" class="s4-tail">Read Committed Snapshot Isolation —— 從此,SELECT 不再和 DELETE 搶同一把鎖。</div>
+        </div>
+      </div>
+
+      <!-- ════ S5 版本快照機制 ════ -->
+      <div data-hf-id="hf-lwhy" id="s5" class="scene">
+        <div data-hf-id="hf-9ux3" class="inner">
+          <div data-hf-id="hf-vj1a" class="grid-bg"></div>
+          <div data-hf-id="hf-i4a4" class="glow s5-glow" data-layout-ignore=""></div>
+          <div data-hf-id="hf-ui7l" class="s5-rails" data-layout-ignore="">
+            <div data-hf-id="hf-03mm" class="s5-rail" style="top:0"></div>
+            <div data-hf-id="hf-jssw" class="s5-rail" style="top:60px"></div>
+          </div>
+          <div data-hf-id="hf-feot" class="toprule"></div>
+          <div data-hf-id="hf-8ms4" class="corner-tl mono">RCSI BRIEF · 05 / 原理</div>
+          <div data-hf-id="hf-ilr3" class="corner-br mono">DB PLATFORM · PROD</div>
+          <div data-hf-id="hf-hvz4" class="s5-kicker mono kicker">READ_COMMITTED_SNAPSHOT = ON</div>
+          <div data-hf-id="hf-r9gv" class="s5-title serif">寫的人改實體,讀的人看快照</div>
+
+          <svg data-hf-id="hf-pgee" class="s5-svg" viewBox="0 0 1920 1080">
+            <path data-hf-id="hf-htvj" id="s5pdel" class="s5-path s5-pathdel" pathLength="1" d="M 415 360 L 415 430" />
+            <path data-hf-id="hf-tijn" id="s5pptr" class="s5-path s5-pathptr" pathLength="1" d="M 700 520 L 1220 520" />
+            <path data-hf-id="hf-lh5r" id="s5psel" class="s5-path s5-pathsel" pathLength="1" d="M 610 840 C 1000 840 1140 700 1240 560" />
+          </svg>
+
+          <div data-hf-id="hf-z7qw" class="s5-delcap mono">DELETE — 照常拿 X 鎖</div>
+          <div data-hf-id="hf-powb" class="s5-table card">
+            <div data-hf-id="hf-ypuo" class="s5-tabletitle">Orders 資料表(實體列)</div>
+            <div data-hf-id="hf-sy8c" class="s5-row mono"><span data-hf-id="hf-vf0v">#1024 · 狀態:已出貨</span><span data-hf-id="hf-kief" class="s5-xbadge mono">X 鎖定中</span></div>
+          </div>
+          <div data-hf-id="hf-2toh" class="s5-selcap mono">SELECT — 不拿 S 鎖</div>
+          <div data-hf-id="hf-y3pq" class="s5-store card">
+            <div data-hf-id="hf-1jiv" class="s5-storetitle mono">tempdb · VERSION STORE</div>
+            <div data-hf-id="hf-coao" class="s5-ver mono">v41 · 已提交版本(快照)<div data-hf-id="hf-6sp7" class="meta">committed 03:17:41 — SELECT 讀這裡</div></div>
+            <div data-hf-id="hf-wknb" class="s5-ver s5-verold mono">v40 · 更舊版本<div data-hf-id="hf-mm6v" class="meta">交易結束後自動清理</div></div>
+          </div>
+          <div data-hf-id="hf-72y1" class="s5-plabel del mono">寫:鎖實體列</div>
+          <div data-hf-id="hf-6bca" class="s5-plabel ptr mono">14-byte 版本指標 → 舊版本搬進 tempdb</div>
+          <div data-hf-id="hf-sxi5" class="s5-plabel sel mono">讀:不等鎖 —— 直接讀「查詢開始那一刻」最新的已提交版本</div>
+
+          <div data-hf-id="hf-7yrd" class="s5-caption">同一張表,<b data-hf-id="hf-8d6a">兩條軌道</b> —— 讀寫互不阻塞,也讀不到髒資料。</div>
+          <div data-hf-id="hf-juyv" class="s5-foot">寫 vs 寫?照樣排隊 —— 資料正確性不打折。(這正是它和 NOLOCK 的差別)</div>
+        </div>
+      </div>
+
+      <!-- ════ S6 效益與證據 ════ -->
+      <div data-hf-id="hf-hydx" id="s6" class="scene">
+        <div data-hf-id="hf-a984" class="inner">
+          <div data-hf-id="hf-uc47" class="grid-bg"></div>
+          <div data-hf-id="hf-wo3p" class="glow s6-glow" data-layout-ignore=""></div>
+          <div data-hf-id="hf-xgfg" class="s6-ghost serif" data-layout-allow-overflow="">✓</div>
+          <div data-hf-id="hf-i6u0" class="toprule"></div>
+          <div data-hf-id="hf-8ing" class="corner-tl mono">RCSI BRIEF · 06 / 效益</div>
+          <div data-hf-id="hf-j024" class="corner-br mono">DB PLATFORM · PROD</div>
+          <div data-hf-id="hf-d6x7" class="s6-kicker mono kicker">"READERS DON'T BLOCK WRITERS. WRITERS DON'T BLOCK READERS."</div>
+          <div data-hf-id="hf-qw75" class="s6-title serif">開啟之後,我們得到什麼</div>
+
+          <div data-hf-id="hf-94x4" class="s6-card card s6-c1">
+            <div data-hf-id="hf-7jqq" class="s6-chead serif"><svg data-hf-id="hf-l11t" class="s6-tick" viewBox="0 0 40 40"><path data-hf-id="hf-5ap0" pathLength="1" d="M 8 21 L 17 30 L 33 11" /></svg>讀不擋寫,寫不擋讀</div>
+            <div data-hf-id="hf-ekya" class="s6-cline">報表、查詢、批次刪檔,同桌共存 —— 鎖等待從根本消失。</div>
+          </div>
+          <div data-hf-id="hf-hssz" class="s6-card card s6-c2">
+            <div data-hf-id="hf-wflg" class="s6-chead serif"><svg data-hf-id="hf-xurp" class="s6-tick" viewBox="0 0 40 40"><path data-hf-id="hf-jvvg" pathLength="1" d="M 8 21 L 17 30 L 33 11" /></svg>讀寫死結,直接絕種</div>
+            <div data-hf-id="hf-hpau" class="s6-cline">SELECT 退出等待,環就接不起來 —— 是<b data-hf-id="hf-0mxh" style="color:#3DD68C">結構性消失</b>,不是機率變低。</div>
+          </div>
+          <div data-hf-id="hf-duoy" class="s6-card card s6-c3">
+            <div data-hf-id="hf-lmnd" class="s6-chead serif"><svg data-hf-id="hf-z1os" class="s6-tick" viewBox="0 0 40 40"><path data-hf-id="hf-ioyd" pathLength="1" d="M 8 21 L 17 30 L 33 11" /></svg>0 行程式碼修改</div>
+            <div data-hf-id="hf-m6b3" class="s6-cline">資料庫層一次切換,所有應用程式立即受益 —— 不用排開發人力。</div>
+          </div>
+          <div data-hf-id="hf-xal1" class="s6-card card s6-c4">
+            <div data-hf-id="hf-pwjm" class="s6-chead serif"><svg data-hf-id="hf-yndr" class="s6-tick" viewBox="0 0 40 40"><path data-hf-id="hf-j39e" pathLength="1" d="M 8 21 L 17 30 L 33 11" /></svg>把 NOLOCK 送進歷史</div>
+            <div data-hf-id="hf-qhkp" class="s6-cline"><b data-hf-id="hf-lv78">NOLOCK = 髒讀、跳列、重複讀</b>;RCSI 只讀已提交資料,快又正確。</div>
+          </div>
+
+          <div data-hf-id="hf-o1st" class="s6-azure">
+            <div data-hf-id="hf-eb02" class="big serif">Azure SQL Database 出廠預設<div data-hf-id="hf-813m" class="bigmono mono">READ_COMMITTED_SNAPSHOT = ON</div></div>
+            <div data-hf-id="hf-ytkm" class="cite">微軟自家雲端數百萬個資料庫、與 Microsoft Fabric 的預設值 —— 我們只是調成微軟眼中「現代的預設」。<br data-hf-id="hf-x5px"><span data-hf-id="hf-satx" class="mono">— Microsoft Learn · SET TRANSACTION ISOLATION LEVEL</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ S7 風險 ════ -->
+      <div data-hf-id="hf-ez4c" id="s7" class="scene">
+        <div data-hf-id="hf-92b1" class="inner">
+          <div data-hf-id="hf-uqf8" class="grid-bg"></div>
+          <div data-hf-id="hf-wqnu" class="glow s7-glow" data-layout-ignore=""></div>
+          <div data-hf-id="hf-zs2t" class="s7-ghost serif" data-layout-allow-overflow="">!</div>
+          <div data-hf-id="hf-hsiz" class="toprule"></div>
+          <div data-hf-id="hf-rhvf" class="corner-tl mono">RCSI BRIEF · 07 / 代價</div>
+          <div data-hf-id="hf-ht51" class="corner-br mono">DB PLATFORM · PROD</div>
+          <div data-hf-id="hf-z0dc" class="s7-kicker mono kicker">TRADE-OFFS — 天下沒有免費的午餐</div>
+          <div data-hf-id="hf-qzf5" class="s7-title serif">代價,說清楚</div>
+
+          <div data-hf-id="hf-rayp" class="s7-row s7-r1">
+            <div data-hf-id="hf-bnwg" class="s7-cost">
+              <div data-hf-id="hf-9sf3" class="s7-costhead">① tempdb 變重</div>
+              <div data-hf-id="hf-fgv8" class="s7-costline">版本存放區吃 tempdb 空間;<br data-hf-id="hf-rsrt">長交易不結束,版本就一路堆積。</div>
+            </div>
+            <div data-hf-id="hf-zayy" class="s7-arrow mono">→ 對策</div>
+            <div data-hf-id="hf-6uo0" class="s7-fix">
+              <div data-hf-id="hf-kly1" class="s7-fixhead">監控 + 揪出長交易</div>
+              <div data-hf-id="hf-5p4g" class="s7-fixline mono">sys.dm_tran_version_store_space_usage<br data-hf-id="hf-szow">告警長交易;SQL 2019+ 可用 ADR 分流</div>
+            </div>
+          </div>
+          <div data-hf-id="hf-v92q" class="s7-row s7-r2">
+            <div data-hf-id="hf-0ybc" class="s7-cost">
+              <div data-hf-id="hf-tmem" class="s7-costhead">② 每列 +14 bytes</div>
+              <div data-hf-id="hf-59ua" class="s7-costline">列上多掛一個版本指標,<br data-hf-id="hf-sldv">寫入成本略增。</div>
+            </div>
+            <div data-hf-id="hf-tn2m" class="s7-arrow mono">→ 對策</div>
+            <div data-hf-id="hf-klvc" class="s7-fix">
+              <div data-hf-id="hf-f5kp" class="s7-fixhead">壓測驗證</div>
+              <div data-hf-id="hf-1gmv" class="s7-fixline">多數 OLTP 工作負載無感;<br data-hf-id="hf-qluq">上線前用 staging 實測確認。</div>
+            </div>
+          </div>
+          <div data-hf-id="hf-z76r" class="s7-row s7-r3">
+            <div data-hf-id="hf-zre9" class="s7-cost">
+              <div data-hf-id="hf-q530" class="s7-costhead">③ 語意改變</div>
+              <div data-hf-id="hf-urb4" class="s7-costline">SELECT 不再「等寫完才讀」——<br data-hf-id="hf-q7jp">讀到的是語句開始時的快照。</div>
+            </div>
+            <div data-hf-id="hf-u1dn" class="s7-arrow mono">→ 對策</div>
+            <div data-hf-id="hf-jey9" class="s7-fix">
+              <div data-hf-id="hf-op0q" class="s7-fixhead">盤點「先查再改」邏輯</div>
+              <div data-hf-id="hf-fxfs" class="s7-fixline">依賴鎖等待的程式碼,<br data-hf-id="hf-regs">逐一加 <span data-hf-id="hf-rn78" class="mono">UPDLOCK</span> 明示意圖。</div>
+            </div>
+          </div>
+          <div data-hf-id="hf-5ezt" class="s7-bottom mono">誠實評估:風險全部可監控、可演練、可回退(SET READ_COMMITTED_SNAPSHOT OFF)。</div>
+        </div>
+      </div>
+
+      <!-- ════ S8 行動方案 + 金句 ════ -->
+      <div data-hf-id="hf-b10b" id="s8" class="scene">
+        <div data-hf-id="hf-9gm2" class="inner">
+          <div data-hf-id="hf-tji5" class="grid-bg"></div>
+          <div data-hf-id="hf-g103" class="glow s8-glow" data-layout-ignore=""></div>
+          <div data-hf-id="hf-he7y" class="toprule"></div>
+          <div data-hf-id="hf-9kxb" class="corner-tl mono">RCSI BRIEF · 08 / 行動</div>
+          <div data-hf-id="hf-i7g2" class="corner-br mono">DB PLATFORM · PROD</div>
+          <div data-hf-id="hf-x974" class="s8-planewrap">
+            <div data-hf-id="hf-3ymn" class="s8-kicker mono kicker">ROLLOUT PLAN — 不是賭,是工程</div>
+            <div data-hf-id="hf-gok3" class="s8-title serif">上線三步,風險可控</div>
+            <div data-hf-id="hf-85ao" class="s8-line"></div>
+            <div data-hf-id="hf-ohfg" class="s8-dot s8-d1 mono">1</div>
+            <div data-hf-id="hf-hzb6" class="s8-dot s8-d2 mono">2</div>
+            <div data-hf-id="hf-k3p0" class="s8-dot s8-d3 mono">3</div>
+            <div data-hf-id="hf-d5l2" class="s8-steptext s8-t1">
+              <div data-hf-id="hf-8rm8" class="s8-sthead serif">Staging 先開</div>
+              <div data-hf-id="hf-52sz" class="s8-stline">完整壓測,觀察 tempdb<br data-hf-id="hf-r05r">與版本存放區水位</div>
+              <div data-hf-id="hf-xbpu" class="s8-stmono mono">baseline → 對照</div>
+            </div>
+            <div data-hf-id="hf-97h1" class="s8-steptext s8-t2">
+              <div data-hf-id="hf-2xe2" class="s8-sthead serif">盤點程式碼</div>
+              <div data-hf-id="hf-fi61" class="s8-stline">找出依賴「讀會等寫」的邏輯<br data-hf-id="hf-p0mm">必要處加 UPDLOCK</div>
+              <div data-hf-id="hf-kk06" class="s8-stmono mono">audit → 修補</div>
+            </div>
+            <div data-hf-id="hf-8ft8" class="s8-steptext s8-t3">
+              <div data-hf-id="hf-tcp2" class="s8-sthead serif">離峰切換</div>
+              <div data-hf-id="hf-ong0" class="s8-stline">維護窗口執行 ALTER<br data-hf-id="hf-ombl">監控一週,隨時可回退</div>
+              <div data-hf-id="hf-23q2" class="s8-stmono mono">cutover → 觀察</div>
+            </div>
+          </div>
+          <div data-hf-id="hf-nf4m" class="s8-quotewrap">
+            <div data-hf-id="hf-54gh" class="s8-q1 serif">與其讓資料庫每天選一個犧牲者,</div>
+            <div data-hf-id="hf-2u26" class="s8-q2 serif">不如讓<span data-hf-id="hf-neo1" class="em">讀</span>與<span data-hf-id="hf-nfm8" class="em">寫</span>,各走各的路。</div>
+            <div data-hf-id="hf-kfxo" class="s8-mark mono">ALTER DATABASE … SET READ_COMMITTED_SNAPSHOT ON</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      /* ════════════ S1 深夜告警(0 – 12)════════════ */
+      tl.fromTo(".s1-host", { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 0.15);
+      tl.fromTo(".s1-ts", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "steps(8)" }, 0.3);
+      tl.to(".s1-glow", { scale: 1.07, duration: 1.4, yoyo: true, repeat: 8, ease: "sine.inOut" }, 0);
+      tl.to(".s1-ghostlock", { y: 26, duration: 6, yoyo: true, repeat: 1, ease: "sine.inOut" }, 0);
+      tl.fromTo(".s1-term", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.6);
+      tl.fromTo(".s1-l1", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "steps(36)" }, 1.4);
+      tl.fromTo(".s1-l2", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.9, ease: "steps(50)" }, 2.2);
+      tl.fromTo(".s1-l3", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.9, ease: "steps(51)" }, 3.2);
+      tl.fromTo(".s1-l4", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.9, ease: "steps(46)" }, 4.1);
+      tl.to(".s1-victim", { backgroundColor: "#7F1D24", color: "#FFD9DB", duration: 0.25, ease: "power2.out" }, 5.2);
+      tl.fromTo(".s1-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "expo.out" }, 5.8);
+      tl.fromTo(".s1-head", { opacity: 0, scale: 1.18 }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, 6.0);
+      tl.fromTo(".s1-sub", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "sine.out" }, 6.9);
+      tl.fromTo(".s1-chips .chip", { opacity: 0, y: 18, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(1.6)", stagger: 0.14 }, 8.2);
+
+      /* ── T1: blur-through(11.7)── */
+      tl.to("#s1", { filter: "blur(15px)", scale: 1.05, opacity: 0, duration: 0.4, ease: "power2.in" }, 11.7);
+      tl.fromTo("#s2", { filter: "blur(15px)", scale: 0.95, opacity: 0 }, { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.4, ease: "power2.out" }, 11.9);
+      tl.set("#s1", { visibility: "hidden" }, 12.4);
+
+      /* ════════════ S2 預設世界的鎖(12.3 – 27.7)════════════ */
+      tl.to(".s2-glow", { scale: 1.06, duration: 1.8, yoyo: true, repeat: 8, ease: "sine.inOut" }, 12.3);
+      tl.to(".s2-ghost", { x: -36, duration: 8, yoyo: true, repeat: 1, ease: "sine.inOut" }, 12.3);
+      tl.fromTo(".s2-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 12.45);
+      tl.fromTo(".s2-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 12.6);
+      tl.fromTo(".s2-table", { opacity: 0, scaleX: 0, transformOrigin: "left center" }, { opacity: 1, scaleX: 1, duration: 0.6, ease: "power3.out" }, 13.0);
+      tl.fromTo(".s2-capsel", { opacity: 0, x: -120 }, { opacity: 1, x: 0, duration: 0.55, ease: "expo.out" }, 13.6);
+      tl.fromTo(".s2-capdel", { opacity: 0, x: 120 }, { opacity: 1, x: 0, duration: 0.55, ease: "power4.out" }, 13.9);
+      tl.fromTo(".s2-locks", { opacity: 0, y: -150 }, { opacity: 1, y: 0, duration: 0.6, ease: "back.out(1.5)" }, 14.6);
+      tl.fromTo(".s2-locklabel.ls", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "sine.out" }, 14.9);
+      tl.fromTo(".s2-lockx", { opacity: 0, y: -150 }, { opacity: 1, y: 0, duration: 0.6, ease: "back.out(1.5)" }, 15.3);
+      tl.fromTo(".s2-locklabel.lx", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "sine.out" }, 15.6);
+      tl.fromTo(".s2-caption", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 16.4);
+      tl.fromTo(".s2-matrix", { opacity: 0, y: 50, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: "power3.out" }, 17.6);
+      tl.fromTo(".s2-mrow", { opacity: 0, x: 30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power2.out", stagger: 0.22 }, 18.1);
+      tl.fromTo(".s2-mno", { scale: 1.9 }, { scale: 1, duration: 0.4, ease: "back.out(2)", stagger: 0.22 }, 18.5);
+      tl.fromTo(".s2-wait", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "sine.out" }, 20.4);
+      tl.to(".s2-wait", { opacity: 0.25, duration: 0.5, yoyo: true, repeat: 9, ease: "sine.inOut" }, 20.8);
+      tl.fromTo(".s2-caption2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: "sine.out" }, 21.8);
+
+      /* ── T2: push slide(27.7)── */
+      tl.to("#s2", { x: -1920, duration: 0.5, ease: "power3.inOut" }, 27.7);
+      tl.fromTo("#s3", { x: 1920, opacity: 1 }, { x: 0, duration: 0.5, ease: "power3.inOut", immediateRender: false }, 27.7);
+      tl.set("#s2", { visibility: "hidden" }, 28.3);
+
+      /* ════════════ S3 死結成環(28.2 – 46)════════════ */
+      tl.to(".s3-glow", { scale: 1.09, duration: 0.85, yoyo: true, repeat: 20, ease: "sine.inOut" }, 28.3);
+      tl.fromTo(".s3-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 28.45);
+      tl.fromTo(".s3-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 28.6);
+      tl.fromTo(".s3-rnc", { opacity: 0, y: -34 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 29.0);
+      tl.fromTo(".s3-rcl", { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 29.2);
+      tl.fromTo(".s3-psel", { opacity: 0, x: -64 }, { opacity: 1, x: 0, duration: 0.55, ease: "expo.out" }, 29.45);
+      tl.fromTo(".s3-pdel", { opacity: 0, x: 64 }, { opacity: 1, x: 0, duration: 0.55, ease: "back.out(1.3)" }, 29.65);
+      /* 四步成環 */
+      tl.fromTo("#s3s1", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 30.4);
+      tl.to("#s3e1", { strokeDashoffset: 0, duration: 0.7, ease: "power2.inOut" }, 30.5);
+      tl.fromTo("#s3l1", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "sine.out" }, 31.0);
+      tl.fromTo("#s3s2", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 31.9);
+      tl.to("#s3e2", { strokeDashoffset: 0, duration: 0.7, ease: "power2.inOut" }, 32.0);
+      tl.fromTo("#s3l2", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "sine.out" }, 32.5);
+      tl.fromTo("#s3s3", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 33.4);
+      tl.to("#s3e3", { strokeDashoffset: 0, duration: 0.8, ease: "power1.inOut" }, 33.5);
+      tl.fromTo("#s3l3", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "sine.out" }, 34.1);
+      tl.fromTo("#s3s4", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 35.0);
+      tl.to("#s3e4", { strokeDashoffset: 0, duration: 0.8, ease: "power1.inOut" }, 35.1);
+      tl.fromTo("#s3l4", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "sine.out" }, 35.7);
+      /* 環閉合:閃爍 + 震動 */
+      tl.fromTo(".s3-cycle", { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2.2)" }, 36.1);
+      tl.to(".s3-flash", { opacity: 1, duration: 0.1, yoyo: true, repeat: 3, ease: "steps(1)" }, 36.2);
+      tl.fromTo(".s3-svg", { x: 0 }, { x: 7, duration: 0.06, yoyo: true, repeat: 5, ease: "sine.inOut" }, 36.25);
+      /* 偵測器掃描 → 處決 */
+      tl.fromTo(".s3-scan", { x: 0, opacity: 0 }, { opacity: 1, duration: 0.2, ease: "sine.out" }, 37.3);
+      tl.to(".s3-scan", { x: 1400, duration: 1.1, ease: "power1.inOut" }, 37.5);
+      tl.to(".s3-scan", { opacity: 0, duration: 0.25, ease: "sine.in" }, 38.6);
+      tl.fromTo(".s3-bottom", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "sine.out" }, 37.8);
+      /* 宣判瞬間:整個案發現場退到背景,讓判決獨佔畫面 */
+      tl.to(".s3-psel", { opacity: 0.22, duration: 0.4, ease: "power2.in" }, 38.9);
+      tl.to(".s3-pdel", { opacity: 0.3, duration: 0.4, ease: "power2.in" }, 38.9);
+      tl.to(".s3-rnc, .s3-rcl", { opacity: 0.26, duration: 0.4, ease: "power2.in" }, 38.9);
+      tl.to("#s3e1, #s3e2, #s3e3, #s3e4", { opacity: 0.15, duration: 0.4 }, 38.9);
+      tl.to("#s3l1, #s3l2, #s3l3, #s3l4", { opacity: 0.12, duration: 0.4 }, 38.9);
+      tl.to(".s3-cycle", { opacity: 0.08, duration: 0.4 }, 38.9);
+      tl.fromTo(".s3-x", { opacity: 0, scale: 2.4 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.8)" }, 39.0);
+      tl.fromTo(".s3-victim", { opacity: 0, scale: 1.35 }, { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out" }, 39.6);
+      tl.fromTo(".s3-victimsub", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 40.4);
+      tl.fromTo(".s3-closing", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.8, ease: "sine.out" }, 42.2);
+
+      /* ── T3: hard cut(46)── */
+      tl.set("#s3", { opacity: 0, visibility: "hidden" }, 46.0);
+      tl.set("#s4", { opacity: 1 }, 46.0);
+
+      /* ════════════ S4 一行指令(46 – 57.7)════════════ */
+      tl.to(".s4-glow", { opacity: 0.6, duration: 1.8, ease: "sine.inOut" }, 46.2);
+      tl.to(".s4-glow", { scale: 1.05, duration: 2.0, yoyo: true, repeat: 4, ease: "sine.inOut" }, 46.2);
+      tl.fromTo(".s4-term", { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.7, ease: "sine.out" }, 46.9);
+      tl.fromTo(".s4-sql1", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.8, ease: "steps(27)" }, 47.4);
+      tl.fromTo(".s4-sql2", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.9, ease: "steps(32)" }, 48.4);
+      tl.fromTo(".s4-sql3", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "steps(26)" }, 49.5);
+      tl.to(".s4-cursor", { opacity: 0, duration: 0.38, yoyo: true, repeat: 7, ease: "steps(1)" }, 50.2);
+      tl.fromTo(".s4-done", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "sine.out" }, 51.0);
+      tl.to(".s4-termbody", { boxShadow: "0 0 60px rgba(61,214,140,0.35)", duration: 0.35, yoyo: true, repeat: 1, ease: "sine.inOut" }, 51.1);
+      tl.fromTo(".s4-head", { opacity: 0, y: 70 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 52.0);
+      tl.fromTo(".s4-notes .chip", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.5)", stagger: 0.16 }, 53.4);
+      tl.fromTo(".s4-tail", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "sine.out" }, 55.0);
+
+      /* ── T4: blur crossfade(57.7)── */
+      tl.to("#s4", { filter: "blur(10px)", scale: 1.03, opacity: 0, duration: 0.5, ease: "power2.inOut" }, 57.7);
+      tl.fromTo("#s5", { filter: "blur(10px)", scale: 0.97, opacity: 0 }, { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, 57.8);
+      tl.set("#s4", { visibility: "hidden" }, 58.5);
+
+      /* ════════════ S5 版本快照(58.3 – 75.7)════════════ */
+      tl.to(".s5-glow", { scale: 1.06, duration: 1.9, yoyo: true, repeat: 8, ease: "sine.inOut" }, 58.3);
+      tl.to(".s5-rails", { x: -60, duration: 8.6, yoyo: true, repeat: 1, ease: "sine.inOut" }, 58.3);
+      tl.fromTo(".s5-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 58.45);
+      tl.fromTo(".s5-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 58.6);
+      tl.fromTo(".s5-table", { opacity: 0, x: -50 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, 59.1);
+      tl.fromTo(".s5-delcap", { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 0.55, ease: "back.out(1.4)" }, 59.8);
+      tl.to("#s5pdel", { strokeDashoffset: 0, duration: 0.45, ease: "power2.inOut" }, 60.4);
+      tl.fromTo(".s5-plabel.del", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "sine.out" }, 60.7);
+      tl.fromTo(".s5-store", { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: 0.6, ease: "expo.out" }, 61.4);
+      tl.fromTo(".s5-ver:not(.s5-verold)", { opacity: 0, x: -480, scale: 0.82 }, { opacity: 1, x: 0, scale: 1, duration: 0.8, ease: "power2.inOut" }, 62.2);
+      tl.fromTo(".s5-verold", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "sine.out" }, 62.9);
+      tl.to("#s5pptr", { strokeDashoffset: 0, duration: 0.6, ease: "power1.inOut" }, 63.2);
+      tl.fromTo(".s5-plabel.ptr", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "sine.out" }, 63.7);
+      tl.fromTo(".s5-selcap", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.6, ease: "power4.out" }, 64.6);
+      tl.to("#s5psel", { strokeDashoffset: 0, duration: 1.0, ease: "power1.inOut" }, 65.2);
+      tl.fromTo(".s5-plabel.sel", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "sine.out" }, 65.9);
+      tl.to("#s5psel", { opacity: 0.45, duration: 0.55, yoyo: true, repeat: 5, ease: "sine.inOut" }, 66.6);
+      tl.to("#s5pdel", { opacity: 0.45, duration: 0.55, yoyo: true, repeat: 5, ease: "sine.inOut" }, 66.88);
+      tl.fromTo(".s5-caption", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 68.0);
+      tl.fromTo(".s5-foot", { opacity: 0 }, { opacity: 1, duration: 0.7, ease: "sine.out" }, 70.6);
+
+      /* ── T5: push slide(75.7)── */
+      tl.to("#s5", { x: -1920, duration: 0.5, ease: "power3.inOut" }, 75.7);
+      tl.fromTo("#s6", { x: 1920, opacity: 1 }, { x: 0, duration: 0.5, ease: "power3.inOut", immediateRender: false }, 75.7);
+      tl.set("#s5", { visibility: "hidden" }, 76.3);
+
+      /* ════════════ S6 效益與證據(76.2 – 89.7)════════════ */
+      tl.to(".s6-glow", { scale: 1.05, duration: 1.7, yoyo: true, repeat: 7, ease: "sine.inOut" }, 76.2);
+      tl.to(".s6-ghost", { rotation: 8, duration: 13, ease: "none" }, 76.2);
+      tl.fromTo(".s6-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 76.35);
+      tl.fromTo(".s6-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 76.5);
+      tl.fromTo(".s6-c1", { opacity: 0, x: -70 }, { opacity: 1, x: 0, duration: 0.55, ease: "expo.out" }, 77.1);
+      tl.fromTo(".s6-c2", { opacity: 0, y: -56 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 77.45);
+      tl.fromTo(".s6-c3", { opacity: 0, y: 56 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 77.8);
+      tl.fromTo(".s6-c4", { opacity: 0, x: 70 }, { opacity: 1, x: 0, duration: 0.55, ease: "back.out(1.2)" }, 78.15);
+      tl.to(".s6-c1 .s6-tick path", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, 78.0);
+      tl.to(".s6-c2 .s6-tick path", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, 78.35);
+      tl.to(".s6-c3 .s6-tick path", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, 78.7);
+      tl.to(".s6-c4 .s6-tick path", { strokeDashoffset: 0, duration: 0.4, ease: "power2.out" }, 79.05);
+      tl.fromTo(".s6-azure", { opacity: 0, y: 90 }, { opacity: 1, y: 0, duration: 0.7, ease: "back.out(1.2)" }, 80.4);
+      tl.to(".s6-azure", { boxShadow: "0 0 50px rgba(61,214,140,0.25)", duration: 0.6, yoyo: true, repeat: 3, ease: "sine.inOut" }, 81.6);
+
+      /* ── T6: vertical push(89.7)── */
+      tl.to("#s6", { y: -1080, duration: 0.5, ease: "power3.inOut" }, 89.7);
+      tl.fromTo("#s7", { y: 1080, opacity: 1 }, { y: 0, duration: 0.5, ease: "power3.inOut", immediateRender: false }, 89.7);
+      tl.set("#s6", { visibility: "hidden" }, 90.3);
+
+      /* ════════════ S7 風險(90.2 – 101.7)════════════ */
+      tl.to(".s7-glow", { scale: 1.05, duration: 2.2, yoyo: true, repeat: 5, ease: "sine.inOut" }, 90.2);
+      tl.to(".s7-ghost", { y: -24, duration: 5.6, yoyo: true, repeat: 1, ease: "sine.inOut" }, 90.2);
+      tl.fromTo(".s7-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 90.35);
+      tl.fromTo(".s7-title", { opacity: 0 }, { opacity: 1, duration: 0.9, ease: "sine.out" }, 90.5);
+      tl.fromTo(".s7-r1 .s7-cost", { opacity: 0, x: -44 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 91.4);
+      tl.fromTo(".s7-r1 .s7-arrow", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.8)" }, 91.75);
+      tl.fromTo(".s7-r1 .s7-fix", { opacity: 0, x: 44 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 91.95);
+      tl.fromTo(".s7-r2 .s7-cost", { opacity: 0, x: -44 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 92.9);
+      tl.fromTo(".s7-r2 .s7-arrow", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.8)" }, 93.25);
+      tl.fromTo(".s7-r2 .s7-fix", { opacity: 0, x: 44 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 93.45);
+      tl.fromTo(".s7-r3 .s7-cost", { opacity: 0, x: -44 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, 94.4);
+      tl.fromTo(".s7-r3 .s7-arrow", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.8)" }, 94.75);
+      tl.fromTo(".s7-r3 .s7-fix", { opacity: 0, x: 44 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 94.95);
+      tl.fromTo(".s7-bottom", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.7, ease: "sine.out" }, 96.6);
+
+      /* ── T7: blur crossfade(101.7)── */
+      tl.to("#s7", { filter: "blur(10px)", scale: 1.03, opacity: 0, duration: 0.5, ease: "power2.inOut" }, 101.7);
+      tl.fromTo("#s8", { filter: "blur(10px)", scale: 0.97, opacity: 0 }, { filter: "blur(0px)", scale: 1, opacity: 1, duration: 0.5, ease: "power2.inOut" }, 101.8);
+      tl.set("#s7", { visibility: "hidden" }, 102.5);
+
+      /* ════════════ S8 行動方案 + 金句(102.3 – 116)════════════ */
+      tl.to(".s8-glow", { scale: 1.05, duration: 2.4, yoyo: true, repeat: 4, ease: "sine.inOut" }, 102.3);
+      tl.fromTo(".s8-kicker", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }, 102.45);
+      tl.fromTo(".s8-title", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 102.6);
+      tl.fromTo(".s8-line", { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "power2.inOut" }, 103.2);
+      tl.fromTo(".s8-d1", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, 103.4);
+      tl.fromTo(".s8-d2", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, 103.7);
+      tl.fromTo(".s8-d3", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, 104.0);
+      tl.fromTo(".s8-t1", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 103.8);
+      tl.fromTo(".s8-t2", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 104.15);
+      tl.fromTo(".s8-t3", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.55, ease: "expo.out" }, 104.5);
+      /* 最終場景:允許出場 → 金句 */
+      tl.to(".s8-planewrap", { opacity: 0, duration: 0.7, ease: "power2.in" }, 108.6);
+      tl.set(".s8-planewrap", { visibility: "hidden" }, 109.35);
+      tl.fromTo(".s8-q1", { opacity: 0, y: 44 }, { opacity: 1, y: 0, duration: 1.1, ease: "sine.out" }, 109.5);
+      tl.fromTo(".s8-q2", { opacity: 0, y: 44 }, { opacity: 1, y: 0, duration: 1.1, ease: "sine.out" }, 110.7);
+      tl.fromTo(".s8-mark", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "sine.out" }, 112.3);
+      tl.to(".s8-mark", { opacity: 0.45, duration: 0.7, yoyo: true, repeat: 1, ease: "sine.inOut" }, 113.2);
+      tl.to("#s8 .inner", { opacity: 0, duration: 1.3, ease: "power1.in" }, 114.6);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
